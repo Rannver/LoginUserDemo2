@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">LoginUserDemo</string>
+    <string name="Signup_name"><u>新用户注册</u></string>
+    <string name="Change_pwd_name"><u>忘记密码？</u></string>
+</resources>
