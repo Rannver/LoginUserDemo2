@@ -44,8 +44,6 @@ public class MainActivity extends AppCompatActivity {
         btuLogin1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,SignUpActivity.class);
-                startActivity(intent);
 
             }
         });
@@ -70,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
         tvSinupUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(MainActivity.this,SignUpActivity.class);
+                startActivity(intent);
             }
         });
 
