@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#233f3f3f">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lin1"
+        android:orientation="horizontal"
+        android:background="#ffffff"
+        android:layout_marginTop="5dp">
+
+        <com.example.rannver.loginuserdemo.Util.CircleImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:id="@+id/iv_info_head"
+            android:src="@drawable/id_icon"
+            android:layout_centerInParent="true"
+            app:border_width="2dp"
+            app:border_color="#e4e4e4"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="15dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="用户名："
+                    android:textColor="#3d3d3d"
+                    android:textSize="16sp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="8dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/info_username"
+                    android:text="#/A"
+                    android:textColor="#3d3d3d"
+                    android:textSize="16sp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="left"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="性  别："
+                    android:textColor="#3d3d3d"
+                    android:textSize="16sp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="5dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/info_usersex"
+                    android:text="#/A"
+                    android:textColor="#3d3d3d"
+                    android:textSize="16sp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:gravity="left"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="职  业："
+                    android:textColor="#3d3d3d"
+                    android:textSize="16sp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="5dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/info_userjob"
+                    android:text="#/A"
+                    android:textColor="#3d3d3d"
+                    android:textSize="16sp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:gravity="left"
+                    />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="(点击编辑头像和昵称)"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="5dp"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/lin2"
+        android:layout_below="@id/lin1"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:background="#ffffff">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/group_icon"
+                android:layout_marginTop="5dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="好友列表"
+                android:textColor="#3d3d3d"
+                android:textSize="12sp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"/>
+
+        </LinearLayout>
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/list_friend">
+
+        </android.support.v7.widget.RecyclerView>
+
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>
