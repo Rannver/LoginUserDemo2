@@ -111,6 +111,9 @@ public class SignUpActivity extends AppCompatActivity {
                 String user_phone = edSignupPhone.getText().toString();
                 String user_pwd1 = edSignupPwd1.getText().toString();
                 String user_pwd2 = edSignupPwd2.getText().toString();
+                String year = edSignupYear.getText().toString();
+                String month = edSignupMonth.getText().toString();
+                String day = edSignupDay.getText().toString();
                 String user_sex;
                 //未正常注册时的提示语
                 String info;
@@ -128,13 +131,15 @@ public class SignUpActivity extends AppCompatActivity {
                 } else if (!(user_phone.length() == 11)) {
                     PopuWindowTvInfo popuWindowTvInfo = new PopuWindowTvInfo(SignUpActivity.this);
                     popuWindowTvInfo.ChangepopuInfo("手机号码格式不正确，请检查你的手机号码后注册");
-                } else if (!CheckBirthday()) {
-                    System.out.println("CheckBirthday()" + CheckBirthday());
+                } else if (!CheckBirthday(year,month,day)) {
+                    System.out.println("CheckBirthday()" + CheckBirthday(year,month,day));
                     PopuWindowTvInfo popuWindowTvInfo = new PopuWindowTvInfo(SignUpActivity.this);
                     popuWindowTvInfo.ChangepopuInfo("出生日期填写格式不正确，请检查后注册");
                 } else {
                     //上传至远程服务器、本地存储用户信息
                     //跳转至个人信息界面
+                    Intent intent = new Intent(SignUpActivity.this,MainActivity.class);
+                    startActivity(intent);
                 }
 
 
@@ -145,10 +150,8 @@ public class SignUpActivity extends AppCompatActivity {
 
 
     //检测出生日期信息是否正确
-    private boolean CheckBirthday() {
-        String year = edSignupYear.getText().toString();
-        String month = edSignupMonth.getText().toString();
-        String day = edSignupDay.getText().toString();
+    private boolean CheckBirthday(String year,String month,String day) {
+
         DateCheckUtil dateCheckUtil = new DateCheckUtil();
 
         //设置出生日期的Date类

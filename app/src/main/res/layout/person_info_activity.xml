@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/lin1"
+        android:id="@+id/lin_btu_info"
         android:orientation="horizontal"
         android:background="#ffffff"
         android:layout_marginTop="5dp">
@@ -110,7 +110,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="(点击编辑头像和昵称)"
+                android:text="(点击查看或编辑详细信息)"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="5dp"
                 />
@@ -123,14 +123,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/lin2"
-        android:layout_below="@id/lin1"
+        android:layout_below="@id/lin_btu_info"
         android:orientation="vertical"
         android:layout_marginTop="10dp"
         android:background="#ffffff">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <ImageView
@@ -151,16 +151,19 @@
                 android:layout_marginBottom="8dp"/>
 
         </LinearLayout>
-        <android.support.v7.widget.RecyclerView
+
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/list_friend">
+            android:layout_height="match_parent">
 
-        </android.support.v7.widget.RecyclerView>
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/list_friend">
+            </android.support.v7.widget.RecyclerView>
 
+        </ScrollView>
 
     </LinearLayout>
-
-
 
 </RelativeLayout>

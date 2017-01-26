@@ -45,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                //跳转
+                Intent intent_1 = new Intent(MainActivity.this,PersonInfoActivity.class);
+                intent_1.putExtra("login_flag","1");
+                startActivity(intent_1);
             }
         });
 
@@ -53,6 +57,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                //跳转
+                Intent intent_2 = new Intent(MainActivity.this,PersonInfoActivity.class);
+                intent_2.putExtra("login_flag","2");
+                startActivity(intent_2);
             }
         });
 
