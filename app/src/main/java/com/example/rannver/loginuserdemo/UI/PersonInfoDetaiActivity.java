@@ -33,10 +33,6 @@ public class PersonInfoDetaiActivity extends AppCompatActivity {
     TextView tvInfoDetaiSex;
     @BindView(R.id.tv_info_detai_year)
     TextView tvInfoDetaiYear;
-    @BindView(R.id.tv_info_detai_month)
-    TextView tvInfoDetaiMonth;
-    @BindView(R.id.tv_info_detai_day)
-    TextView tvInfoDetaiDay;
     @BindView(R.id.tv_info_detai_address)
     TextView tvInfoDetaiAddress;
     @BindView(R.id.tv_info_detai_job)

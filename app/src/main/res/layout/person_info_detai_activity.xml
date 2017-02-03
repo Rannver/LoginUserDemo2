@@ -213,43 +213,6 @@
                         android:textSize="16sp"
                         android:layout_marginLeft="10dp"
                         />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="年"
-                        android:textColor="#3d3d3d"
-                        android:textSize="16sp" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/tv_info_detai_month"
-                        android:text="#/A"
-                        android:textColor="#3d3d3d"
-                        android:textSize="16sp"
-                        android:layout_marginLeft="10dp"
-                        />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="月"
-                        android:textColor="#3d3d3d"
-                        android:textSize="16sp" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/tv_info_detai_day"
-                        android:text="#/A"
-                        android:textColor="#3d3d3d"
-                        android:textSize="16sp"
-                        android:layout_marginLeft="10dp"
-                        />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="日"
-                        android:textColor="#3d3d3d"
-                        android:textSize="16sp" />
 
 
                 </LinearLayout>
