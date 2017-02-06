@@ -3,12 +3,21 @@ package com.example.rannver.loginuserdemo.UI;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.rannver.loginuserdemo.Data.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
+import com.example.rannver.loginuserdemo.Util.PopuWindowTvInfo;
+
+import org.litepal.LitePal;
+import org.litepal.crud.DataSupport;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,18 +46,63 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        String User_login_id = edLoginId.getText().toString();
-        String User_login_pwd = edLoginPwd.getText().toString();
+        //建立数据库
+        LitePal.getDatabase();
+        //存一个admin
+//        PersonInfomation personInfomation = new PersonInfomation();
+//        personInfomation.setUser_name("admin");
+//        personInfomation.setUser_pwd("admin");
+//        personInfomation.save();
+        //查询是否存在admin
+//        List<PersonInfomation> list = DataSupport.where("user_name = ?","admin").find(PersonInfomation.class);
+//        String str = null;
+//        for(PersonInfomation p:list){
+//            str = p.getUser_name()+" "+p.getUser_pwd();
+//        }
+//        Log.d("admin",str);
 
         //普通登录入口
         btuLogin1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                //跳转
-                Intent intent_1 = new Intent(MainActivity.this,PersonInfoActivity.class);
-                intent_1.putExtra("login_flag","1");
-                startActivity(intent_1);
+                //从UI界面拿到信息
+                String User_login_id = edLoginId.getText().toString();
+                String User_login_pwd = edLoginPwd.getText().toString();
+
+                //从数据库拿到信息
+                List<PersonInfomation> login_db_list = DataSupport.where("user_name = ?",User_login_id).find(PersonInfomation.class);
+                String login_db_name = "";
+                String login_db_pwd = "";
+                for (PersonInfomation personInfomation:login_db_list){
+                    login_db_name = personInfomation.getUser_name();
+                    login_db_pwd = personInfomation.getUser_pwd();
+                }
+
+                Log.d("login","tv_name:"+User_login_id);
+                Log.d("login","tv_pwd:"+User_login_pwd);
+                Log.d("login","db_name:"+login_db_name);
+                Log.d("login","db_pwd:"+login_db_pwd);
+
+                //登录跳转
+                if(User_login_id.equals("")){
+                    Toast.makeText(MainActivity.this, "用户名未填写", Toast.LENGTH_SHORT).show();
+                }else if(User_login_pwd.equals("")){
+                    Toast.makeText(MainActivity.this, "用户密码未填写", Toast.LENGTH_SHORT).show();
+                }else if ((login_db_name.equals(User_login_id))&&(login_db_pwd.equals(User_login_pwd))){
+
+                    //跳转
+                    Intent intent_1 = new Intent(MainActivity.this,PersonInfoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent_1.putExtra("login_flag","1");
+                    intent_1.putExtra("login_name",login_db_name);
+                    startActivity(intent_1);
+
+                }else if (login_db_name.equals("")){
+                    Toast.makeText(MainActivity.this, "该用户名未被注册", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(MainActivity.this, "用户名或密码错误，请重试", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -56,11 +110,43 @@ public class MainActivity extends AppCompatActivity {
         btuLogin2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //从UI界面拿到信息
+                String User_login_id = edLoginId.getText().toString();
+                String User_login_pwd = edLoginPwd.getText().toString();
 
-                //跳转
-                Intent intent_2 = new Intent(MainActivity.this,PersonInfoActivity.class);
-                intent_2.putExtra("login_flag","2");
-                startActivity(intent_2);
+                //从数据库拿到信息
+                List<PersonInfomation> login_db_list = DataSupport.where("user_name = ?",User_login_id).find(PersonInfomation.class);
+                String login_db_name = "";
+                String login_db_pwd = "";
+                for (PersonInfomation personInfomation:login_db_list){
+                    login_db_name = personInfomation.getUser_name();
+                    login_db_pwd = personInfomation.getUser_pwd();
+                }
+
+                Log.d("login","tv_name:"+User_login_id);
+                Log.d("login","tv_pwd:"+User_login_pwd);
+                Log.d("login","db_name:"+login_db_name);
+                Log.d("login","db_pwd:"+login_db_pwd);
+
+                //登录跳转
+                if(User_login_id.equals("")){
+                    Toast.makeText(MainActivity.this, "用户名未填写", Toast.LENGTH_SHORT).show();
+                }else if(User_login_pwd.equals("")){
+                    Toast.makeText(MainActivity.this, "用户密码未填写", Toast.LENGTH_SHORT).show();
+                }else if ((login_db_name.equals(User_login_id))&&(login_db_pwd.equals(User_login_pwd))){
+
+                    //跳转
+                    Intent intent_1 = new Intent(MainActivity.this,PersonInfoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent_1.putExtra("login_flag","2");
+                    intent_1.putExtra("login_name",login_db_name);
+                    startActivity(intent_1);
+
+                }else if (login_db_name.equals("")){
+                    Toast.makeText(MainActivity.this, "该用户名未被注册", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(MainActivity.this, "用户名或密码错误，请重试", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 

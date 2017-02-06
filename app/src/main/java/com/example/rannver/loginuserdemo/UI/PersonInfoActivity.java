@@ -1,6 +1,8 @@
 package com.example.rannver.loginuserdemo.UI;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -9,8 +11,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.rannver.loginuserdemo.Data.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.CircleImageView;
+
+import org.litepal.crud.DataSupport;
+
+import java.io.File;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,6 +43,7 @@ public class PersonInfoActivity extends AppCompatActivity {
     RecyclerView listFriend;
 
     private String intent_flag = null;
+    private String intent_name = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +53,38 @@ public class PersonInfoActivity extends AppCompatActivity {
 
         Intent intent_login_flag = getIntent();
         intent_flag = intent_login_flag.getStringExtra("login_flag");
+        intent_name = intent_login_flag.getStringExtra("login_name");
 
-        Toast.makeText(PersonInfoActivity.this,intent_flag,Toast.LENGTH_SHORT).show();
+        Toast.makeText(PersonInfoActivity.this,intent_flag+"，"+intent_name,Toast.LENGTH_SHORT).show();
 
-        //页面显示
+        //个人信息页面显示
+        List<PersonInfomation> info_list = DataSupport.where("user_name = ?",intent_name).find(PersonInfomation.class);
+        String name = "";
+        String sex = "";
+        String job = "";
+        String head_image_path = "";
+        for (PersonInfomation personInfomation:info_list){
+            name = personInfomation.getUser_name();
+            sex = personInfomation.getUser_sex();
+            job = personInfomation.getJob();
+            head_image_path = personInfomation.getUser_image_head();
+        }
+        System.out.println("Info:"+name+" "+sex+" "+job+" "+head_image_path);
+        //设置文字信息
+        infoUsername.setText(name);
+        infoUsersex.setText(sex);
+        infoUserjob.setText(job);
+        //设置图片信息
+        if (head_image_path!=null){
+            File file = new File(head_image_path);
+            if (file.exists()){
+                Bitmap bitmap = BitmapFactory.decodeFile(head_image_path);
+                ivInfoHead.setImageBitmap(bitmap);
+            }
+        }
+
+
+        //好友页面显示
         if (intent_flag!=null){
             if (intent_flag.equals("1")){
                 //普通登录页面显示
@@ -69,6 +106,7 @@ public class PersonInfoActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent_detai = new Intent(PersonInfoActivity.this,PersonInfoDetaiActivity.class);
                 intent_detai.putExtra("login_flag",intent_flag);
+                intent_detai.putExtra("login_name",intent_name);
                 startActivity(intent_detai);
             }
         });

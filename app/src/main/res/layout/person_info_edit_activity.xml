@@ -90,14 +90,6 @@
 
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="#CACDD1"
-                android:layout_below="@+id/lin_edit_1"
-                android:layout_marginTop="5dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -128,14 +120,6 @@
 
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="#CACDD1"
-                android:layout_below="@+id/lin_edit_2"
-                android:layout_marginTop="5dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

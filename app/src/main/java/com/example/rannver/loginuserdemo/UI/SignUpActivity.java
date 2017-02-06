@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,16 +15,20 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 
+import com.example.rannver.loginuserdemo.Data.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.CircleImageView;
 import com.example.rannver.loginuserdemo.Util.DateCheckUtil;
 import com.example.rannver.loginuserdemo.Util.PopuWindowHeadImageUtil;
 import com.example.rannver.loginuserdemo.Util.PopuWindowTvInfo;
 
+import org.litepal.crud.DataSupport;
+
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -115,8 +120,8 @@ public class SignUpActivity extends AppCompatActivity {
                 String month = edSignupMonth.getText().toString();
                 String day = edSignupDay.getText().toString();
                 String user_sex;
-                //未正常注册时的提示语
-                String info;
+
+//                System.out.println("头像路径："+image_head_uri.getPath());
 
                 //检测信息完整度
                 if (!user_pwd1.equals(user_pwd2)) {
@@ -135,8 +140,35 @@ public class SignUpActivity extends AppCompatActivity {
                     System.out.println("CheckBirthday()" + CheckBirthday(year,month,day));
                     PopuWindowTvInfo popuWindowTvInfo = new PopuWindowTvInfo(SignUpActivity.this);
                     popuWindowTvInfo.ChangepopuInfo("出生日期填写格式不正确，请检查后注册");
-                } else {
+                } else if (!CheckUserName(user_name)){
+                    System.out.println("CheckUserName():"+CheckUserName(user_name));
+                    PopuWindowTvInfo popuWindowTvInfo = new PopuWindowTvInfo(SignUpActivity.this);
+                    popuWindowTvInfo.ChangepopuInfo("该用户名已注册，请重新设置后注册");
+                } else{
+                    user_sex = GetSex();
+
+                    System.out.println("用户名："+user_name+"\n"
+                                       +"用户密码："+user_pwd1+"\n"
+                                       +"用户性别："+user_sex+"\n"
+                                       +"用户生日:"+Setbirthday(year,month,day)+"\n"
+                                       +"用户住址："+user_adress+"\n"
+                                       +"用户职业:"+user_job+"\n"
+                                       +"用户电话："+user_phone+"\n"
+                                       +"头像路径："+image_head_uri.getPath()+"\n");
+
                     //上传至远程服务器、本地存储用户信息
+                    //存入本地数据库
+                    PersonInfomation personInfomation = new PersonInfomation();
+                    personInfomation.setUser_name(user_name);
+                    personInfomation.setUser_pwd(user_pwd1);
+                    personInfomation.setUser_sex(user_sex);
+                    personInfomation.setUser_brithday(Setbirthday(year,month,day));
+                    personInfomation.setUser_address(user_adress);
+                    personInfomation.setJob(user_job);
+                    personInfomation.setPhone(user_phone);
+                    personInfomation.setUser_image_head(image_head_uri.getPath());
+                    personInfomation.save();
+
                     //跳转至个人信息界面
                     Intent intent = new Intent(SignUpActivity.this,MainActivity.class);
                     startActivity(intent);
@@ -171,6 +203,19 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
+    //设置出生日期Date
+    private String Setbirthday(String year,String month,String day){
+        Date date_signup = new Date();
+        String date_str = year + "-" + month + "-" + day;
+        SimpleDateFormat sdf_date = new SimpleDateFormat("yyyy-mm-dd");
+        try {
+            date_signup = sdf_date.parse(date_str);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date_str;
+    }
+
     //裁剪器
     private void startPhoneZoom(Uri uri) {
         Intent intent = new Intent("com.android.camera.action.CROP");
@@ -189,7 +234,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     //性别判断
-    public void ChangeSex() {
+    private void ChangeSex() {
 
         RbtuSexBoy.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,6 +255,34 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
     }
+
+    //性别获取
+    private String GetSex(){
+        String sex = "";
+        if (RbtuSexBoy.isChecked()){
+            sex = RbtuSexBoy.getText().toString();
+        }else {
+            sex = RbtuSexGirl.getText().toString();
+        }
+        return sex;
+    }
+
+    //检测用户名是否重复
+    //重复为flase不重复为true
+    private boolean CheckUserName(String name){
+        List<PersonInfomation> login_db_list = DataSupport.where("user_name = ?",name).find(PersonInfomation.class);
+        String check_name = "";
+        for (PersonInfomation personInfomation:login_db_list){
+            check_name = personInfomation.getUser_name();
+            System.out.println("check_name:"+check_name);
+        }
+        if (check_name.equals("")){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

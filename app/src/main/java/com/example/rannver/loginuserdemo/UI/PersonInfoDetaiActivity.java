@@ -1,6 +1,8 @@
 package com.example.rannver.loginuserdemo.UI;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -9,8 +11,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.rannver.loginuserdemo.Data.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.CircleImageView;
+
+import org.litepal.crud.DataSupport;
+
+import java.io.File;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,6 +53,8 @@ public class PersonInfoDetaiActivity extends AppCompatActivity {
     Button btuSigupBack;
 
     private String intent_flag = null;
+    private String intent_name = null;
+    private String id ="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +64,47 @@ public class PersonInfoDetaiActivity extends AppCompatActivity {
 
         Intent intent_login_flag = getIntent();
         intent_flag = intent_login_flag.getStringExtra("login_flag");
-        Toast.makeText(PersonInfoDetaiActivity.this,intent_flag,Toast.LENGTH_SHORT).show();
+        intent_name = intent_login_flag.getStringExtra("login_name");
+        Toast.makeText(PersonInfoDetaiActivity.this,intent_flag+","+intent_name,Toast.LENGTH_SHORT).show();
+
+        //个人信息页面显示
+        List<PersonInfomation> info_list = DataSupport.where("user_name = ?",intent_name).find(PersonInfomation.class);
+
+        id ="";
+        String name = "";
+        String sex = "";
+        String birthday = "";
+        String address = "";
+        String job = "";
+        String phone = "";
+        String head_image_path = "";
+
+        for (PersonInfomation personInfomation:info_list){
+            id = String.valueOf(personInfomation.getUser_id());
+            name = personInfomation.getUser_name();
+            sex = personInfomation.getUser_sex();
+            birthday = personInfomation.getUser_brithday();
+            address = personInfomation.getUser_address();
+            job = personInfomation.getJob();
+            phone = personInfomation.getPhone();
+            head_image_path = personInfomation.getUser_image_head();
+        }
+        System.out.println("Info:"+id+"，"+name+"，"+sex+"，"+birthday+"，"+address+"，"+job+"，"+phone+"，"+head_image_path);
+        tvInfoDetaiId.setText(id);
+        tvInfoDetaiName.setText(name);
+        tvInfoDetaiSex.setText(sex);
+        tvInfoDetaiYear.setText(birthday);
+        tvInfoDetaiAddress.setText(address);
+        tvInfoDetaiJob.setText(job);
+        tvInfoDetaiPhone.setText(phone);
+        //设置图片信息
+        if (head_image_path!=null){
+            File file = new File(head_image_path);
+            if (file.exists()){
+                Bitmap bitmap = BitmapFactory.decodeFile(head_image_path);
+                ivDetaiHead.setImageBitmap(bitmap);
+            }
+        }
 
         //点击返回
         ivDetaiBack.setOnClickListener(new View.OnClickListener() {
@@ -62,6 +112,7 @@ public class PersonInfoDetaiActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent_back = new Intent(PersonInfoDetaiActivity.this, PersonInfoActivity.class);
                 intent_back.putExtra("login_flag",intent_flag);
+                intent_back.putExtra("login_name",intent_name);
                 startActivity(intent_back);
             }
         });
@@ -71,6 +122,8 @@ public class PersonInfoDetaiActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent_edit = new Intent(PersonInfoDetaiActivity.this,PersonInfoEditActivity.class);
                 intent_edit.putExtra("login_flag",intent_flag);
+                intent_edit.putExtra("login_name",intent_name);
+                intent_edit.putExtra("user_id",id);
                 startActivity(intent_edit);
             }
         });
