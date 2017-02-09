@@ -9,6 +9,7 @@ import java.util.Date;
 
 public class DateCheckUtil {
 
+    //日期检测
     public boolean CheckDateFromDay(String year,String month, String day){
         int y = Integer.parseInt(year);
         int m = Integer.parseInt(month);
@@ -29,6 +30,14 @@ public class DateCheckUtil {
         }else {
             return true;
         }
+    }
+
+    //年龄计算
+    public String GetAge(String birthday){
+        String age = null;
+
+
+        return age;
     }
 
     private int ReturnDay(int y, int m, int d) {

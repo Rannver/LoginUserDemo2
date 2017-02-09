@@ -11,7 +11,7 @@ public class PersonFriend extends DataSupport{
 
     private int user_id;
     private int friend_id;
-    private int friend_flag;
+    private int friend_flag;  //用于判断是否是特殊关心或被特殊关心的好友的flag,普通好友1，特别关心谁2，被谁特别关心3
     private String friend_relation;
     private String friend_remark;
 

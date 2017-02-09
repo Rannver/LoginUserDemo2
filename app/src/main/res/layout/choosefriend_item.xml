@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.example.rannver.loginuserdemo.Util.CircleImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/iv_choose_head"
+        android:src="@drawable/id_icon"
+        app:border_width="2dp"
+        app:border_color="#e4e4e4"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="10dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_toRightOf="@+id/iv_choose_head">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/choose_item_name"
+            android:text="用户名（账号）"
+            android:textColor="#3d3d3d"
+            android:textSize="15sp"
+            android:layout_marginTop="13dp"
+            android:layout_marginLeft="10dp"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/choose_item_info"
+            android:text="性别，年龄"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            />
+    </LinearLayout>
+    <Button
+        android:layout_width="60dp"
+        android:layout_height="35dp"
+        android:id="@+id/btu_choose_add"
+        android:text="添 加"
+        android:textColor="#ffffff"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/button_login"
+        android:layout_marginTop="13dp"
+        android:layout_marginRight="20dp"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#CACDD1"
+        android:layout_below="@+id/iv_choose_head"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"/>
+
+</RelativeLayout>

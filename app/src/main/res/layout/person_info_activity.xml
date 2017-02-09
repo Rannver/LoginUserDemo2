@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#233f3f3f">
+    android:background="#113f3f3f">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -121,17 +121,50 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lin_info_box"
+        android:layout_below="@+id/lin_btu_info"
+        android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:background="#ffffff">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/group_icon"
+            app:srcCompat="@android:drawable/ic_input_add" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="消息中心"
+            android:textSize="16sp"
+            android:textColor="#3d3d3d"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="(提示消息)"
+            android:gravity="right"
+            android:paddingRight="15dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/lin2"
-        android:layout_below="@id/lin_btu_info"
+        android:layout_below="@id/lin_info_box"
         android:orientation="vertical"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:background="#ffffff">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:id="@+id/lin_addfriend">
 
             <ImageView
                 android:layout_width="20dp"

@@ -14,7 +14,7 @@
         <com.example.rannver.loginuserdemo.Util.CircleImageView
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:id="@+id/iv_friend_head_old"
+            android:id="@+id/iv_friend_head"
             android:src="@drawable/id_icon"
             android:layout_centerInParent="true"
             app:border_width="2dp"
@@ -26,22 +26,34 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:id="@+id/iv_friend_care"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginLeft="15dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_friend_name"
+                    android:text="(显示用户名和昵称)"
+                    android:textColor="#3d3d3d"
+                    android:textSize="16sp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginLeft="5dp"/>
+            </LinearLayout>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="(显示用户名和昵称)"
-                android:textColor="#3d3d3d"
-                android:textSize="16sp"
-                android:layout_marginTop="25dp"
-                android:layout_marginLeft="15dp"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/tv_friend_info"
                 android:text="(显示职业、性别和年龄)"
                 android:textColor="#3d3d3d"
                 android:textSize="15sp"
                 android:layout_marginTop="5dp"
-                android:layout_marginLeft="15dp"/>
+                android:layout_marginLeft="35dp"/>
         </LinearLayout>
 
     </LinearLayout>
