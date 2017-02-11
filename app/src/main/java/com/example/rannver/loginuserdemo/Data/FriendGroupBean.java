@@ -8,6 +8,7 @@ package com.example.rannver.loginuserdemo.Data;
 public class FriendGroupBean {
 
     private String head_image_path;
+    private String friend_id;
     private String friend_name;
     private String friend_remark;
     private String friend_flag;
@@ -22,6 +23,14 @@ public class FriendGroupBean {
 
     public void setHead_image_path(String head_image_path) {
         this.head_image_path = head_image_path;
+    }
+
+    public String getFriend_id() {
+        return friend_id;
+    }
+
+    public void setFriend_id(String friend_id) {
+        this.friend_id = friend_id;
     }
 
     public String getFriend_name() {

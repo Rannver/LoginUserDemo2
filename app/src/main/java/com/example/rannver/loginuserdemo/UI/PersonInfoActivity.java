@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -21,6 +22,7 @@ import com.example.rannver.loginuserdemo.Util.CircleImageView;
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -97,8 +99,22 @@ public class PersonInfoActivity extends AppCompatActivity {
         if (intent_flag != null) {
             if (intent_flag.equals("1") || intent_flag.equals("2")) {
                 List<FriendGroupBean> friendlist = LoadFriendData(id);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+                listFriend.setLayoutManager(linearLayoutManager);
                 FriendGroupAdpter friendGroupAdpter = new FriendGroupAdpter(friendlist, intent_flag);
+                friendGroupAdpter.SetOnItemClickListener(new FriendGroupAdpter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        //2017.2.11设置RecycleView的监听事件
+                    }
+
+                    @Override
+                    public void onItemLongClick(View view, int position) {
+
+                    }
+                });
                 listFriend.setAdapter(friendGroupAdpter);
+
             } else {
                 Toast.makeText(PersonInfoActivity.this, "程序跳转异常 x02", Toast.LENGTH_SHORT).show();
             }
@@ -138,7 +154,7 @@ public class PersonInfoActivity extends AppCompatActivity {
     }
 
     private List<FriendGroupBean> LoadFriendData(String id) {
-        List<FriendGroupBean> list = null;
+        List<FriendGroupBean> list = new ArrayList<FriendGroupBean>();
 
         //数据库读取好友信息
         List<PersonFriend> info_list = DataSupport.where("user_id = ?", id).find(PersonFriend.class);
@@ -171,6 +187,14 @@ public class PersonInfoActivity extends AppCompatActivity {
 
             list.add(friendGroupBean);
         }
+
+        FriendGroupBean friendGroupBean = new FriendGroupBean();
+        friendGroupBean.setFriend_name("#/A");
+        friendGroupBean.setFriend_job("#/A");
+        friendGroupBean.setFriend_age("#/A");
+        friendGroupBean.setFriend_sex("#/A");
+
+        list.add(friendGroupBean);
 
         return list;
     }

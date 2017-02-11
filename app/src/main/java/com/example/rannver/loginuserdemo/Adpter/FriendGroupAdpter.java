@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.rannver.loginuserdemo.Data.FriendGroupBean;
 import com.example.rannver.loginuserdemo.R;
@@ -51,7 +52,7 @@ public class FriendGroupAdpter extends RecyclerView.Adapter<FriendGroupAdpter.Vi
     }
 
     @Override
-    public void onBindViewHolder(FriendGroupAdpter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final FriendGroupAdpter.ViewHolder holder, final int position) {
 
         //设置好友头像
         SetImageBitmap(holder,friend_list.get(position).getHead_image_path());
@@ -61,16 +62,35 @@ public class FriendGroupAdpter extends RecyclerView.Adapter<FriendGroupAdpter.Vi
         holder.tv_name.setText(name);
         holder.tv_name.setText(info);
         //设置关心标识
-        String flag = friend_list.get(position).getFriend_flag();
-        switch (flag){
-            case "2":
-                holder.iv_care.setImageResource(R.drawable.whocare_icon);
-                break;
-            case "3":
-                holder.iv_care.setImageResource(R.drawable.carewho_icon);
-                break;
-            default:
-                break;
+//        String flag = friend_list.get(position).getFriend_flag();
+//        switch (flag){
+//            case "2":
+//                holder.iv_care.setImageResource(R.drawable.whocare_icon);
+//                break;
+//            case "3":
+//                holder.iv_care.setImageResource(R.drawable.carewho_icon);
+//                break;
+//            default:
+//                break;
+//        }
+
+        //设置监听事件
+        if (OnItemClickListener!=null){
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = holder.getLayoutPosition();
+                    OnItemClickListener.onItemClick(holder.itemView,position);
+                }
+            });
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    int position = holder.getLayoutPosition();
+                    OnItemClickListener.onItemLongClick(holder.itemView,position);
+                    return false;
+                }
+            });
         }
 
     }
@@ -106,6 +126,17 @@ public class FriendGroupAdpter extends RecyclerView.Adapter<FriendGroupAdpter.Vi
                 holder.iv_head.setImageBitmap(bitmap);
             }
         }
+    }
+
+    //点击事件
+    public interface OnItemClickListener{
+        void  onItemClick(View view,int position);
+        void  onItemLongClick(View view,int position);
+    }
+    private OnItemClickListener OnItemClickListener;
+
+    public void SetOnItemClickListener(OnItemClickListener onItemClickListener){
+        OnItemClickListener =onItemClickListener;
     }
 
 }
