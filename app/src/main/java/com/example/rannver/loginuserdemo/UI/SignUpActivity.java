@@ -146,6 +146,12 @@ public class SignUpActivity extends AppCompatActivity {
                     popuWindowTvInfo.ChangepopuInfo("该用户名已注册，请重新设置后注册");
                 } else{
                     user_sex = GetSex();
+                    String path = "";
+                    if (image_head_uri!=null){
+                        path = image_head_uri.getPath();
+                    }else {
+                        path ="";
+                    }
 
                     System.out.println("用户名："+user_name+"\n"
                                        +"用户密码："+user_pwd1+"\n"
@@ -154,23 +160,26 @@ public class SignUpActivity extends AppCompatActivity {
                                        +"用户住址："+user_adress+"\n"
                                        +"用户职业:"+user_job+"\n"
                                        +"用户电话："+user_phone+"\n"
-                                       +"头像路径："+image_head_uri.getPath()+"\n");
+                                       +"头像路径："+path+"\n");
 
                     //上传至远程服务器、本地存储用户信息
                     //存入本地数据库
                     PersonInfomation personInfomation = new PersonInfomation();
-                    personInfomation.setUser_name(user_name);
-                    personInfomation.setUser_pwd(user_pwd1);
-                    personInfomation.setUser_sex(user_sex);
-                    personInfomation.setUser_brithday(Setbirthday(year,month,day));
-                    personInfomation.setUser_address(user_adress);
-                    personInfomation.setJob(user_job);
-                    personInfomation.setPhone(user_phone);
-                    personInfomation.setUser_image_head(image_head_uri.getPath());
+                    personInfomation.setUsername(user_name);
+                    personInfomation.setPassword(user_pwd1);
+                    personInfomation.setGender(user_sex);
+                    personInfomation.setBirthday(Setbirthday(year,month,day));
+                    personInfomation.setAddress(user_adress);
+                    personInfomation.setCareer(user_job);
+                    personInfomation.setPhoneNumber(Long.parseLong(user_phone));
+                    personInfomation.setPortraitUrl(path);
                     personInfomation.save();
 
-                    //跳转至个人信息界面
+                    //跳转至Login界面
                     Intent intent = new Intent(SignUpActivity.this,MainActivity.class);
+                    intent.putExtra("signup_flag","signup");
+                    intent.putExtra("signup_name",user_name);
+                    intent.putExtra("signup_pwd",user_pwd1);
                     startActivity(intent);
                 }
 
@@ -204,7 +213,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     //设置出生日期Date
-    private String Setbirthday(String year,String month,String day){
+    private Date Setbirthday(String year,String month,String day){
         Date date_signup = new Date();
         String date_str = year + "-" + month + "-" + day;
         SimpleDateFormat sdf_date = new SimpleDateFormat("yyyy-mm-dd");
@@ -213,7 +222,7 @@ public class SignUpActivity extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return date_str;
+        return date_signup;
     }
 
     //裁剪器
@@ -270,10 +279,10 @@ public class SignUpActivity extends AppCompatActivity {
     //检测用户名是否重复
     //重复为flase不重复为true
     private boolean CheckUserName(String name){
-        List<PersonInfomation> login_db_list = DataSupport.where("user_name = ?",name).find(PersonInfomation.class);
+        List<PersonInfomation> login_db_list = DataSupport.where("username = ?",name).find(PersonInfomation.class);
         String check_name = "";
         for (PersonInfomation personInfomation:login_db_list){
-            check_name = personInfomation.getUser_name();
+            check_name = personInfomation.getUsername();
             System.out.println("check_name:"+check_name);
         }
         if (check_name.equals("")){

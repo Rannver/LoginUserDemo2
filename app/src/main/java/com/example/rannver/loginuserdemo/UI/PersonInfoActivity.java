@@ -67,18 +67,24 @@ public class PersonInfoActivity extends AppCompatActivity {
         Toast.makeText(PersonInfoActivity.this, intent_flag + "，" + intent_name, Toast.LENGTH_SHORT).show();
 
         //个人信息页面显示
-        List<PersonInfomation> info_list = DataSupport.where("user_name = ?", intent_name).find(PersonInfomation.class);
+        List<PersonInfomation> info_list = DataSupport.where("username = ?", intent_name).find(PersonInfomation.class);
         String name = "";
         String sex = "";
         String job = "";
         String head_image_path = "";
-        String id = "";
+        int id = 0;
+        int care_id = 0;
+        int becare_id = 0;
+        List<PersonFriend> list_friend = null;
         for (PersonInfomation personInfomation : info_list) {
-            name = personInfomation.getUser_name();
-            sex = personInfomation.getUser_sex();
-            job = personInfomation.getJob();
-            head_image_path = personInfomation.getUser_image_head();
-            id = String.valueOf(personInfomation.getUser_id());
+            name = personInfomation.getUsername();
+            sex = personInfomation.getGender();
+            job = personInfomation.getCareer();
+            head_image_path = personInfomation.getPortraitUrl();
+            id = personInfomation.getId();
+            care_id = personInfomation.getCare();
+            becare_id = personInfomation.getBecare();
+            list_friend = personInfomation.getFriendList();
         }
         System.out.println("Info:" + name + " " + sex + " " + job + " " + head_image_path);
         //设置文字信息
@@ -98,7 +104,7 @@ public class PersonInfoActivity extends AppCompatActivity {
         //好友页面显示
         if (intent_flag != null) {
             if (intent_flag.equals("1") || intent_flag.equals("2")) {
-                List<FriendGroupBean> friendlist = LoadFriendData(id);
+                List<FriendGroupBean> friendlist = LoadFriendData(list_friend,care_id,becare_id);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
                 listFriend.setLayoutManager(linearLayoutManager);
                 FriendGroupAdpter friendGroupAdpter = new FriendGroupAdpter(friendlist, intent_flag);
@@ -133,6 +139,7 @@ public class PersonInfoActivity extends AppCompatActivity {
                 startActivity(intent_detai);
             }
         });
+
         //点击进入消息中心事件
         linInfoBox.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,6 +147,7 @@ public class PersonInfoActivity extends AppCompatActivity {
 
             }
         });
+
         //点击进入好友查询事件
         linAddfriend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,40 +161,54 @@ public class PersonInfoActivity extends AppCompatActivity {
 
     }
 
-    private List<FriendGroupBean> LoadFriendData(String id) {
+    private List<FriendGroupBean> LoadFriendData(List<PersonFriend> list_friend,int care_id,int becare_id) {
         List<FriendGroupBean> list = new ArrayList<FriendGroupBean>();
 
         //数据库读取好友信息
-        List<PersonFriend> info_list = DataSupport.where("user_id = ?", id).find(PersonFriend.class);
-        for (PersonFriend friend : info_list) {
-            FriendGroupBean friendGroupBean = new FriendGroupBean();
-            int friend_id = friend.getFriend_id();
 
-            friendGroupBean.setFriend_remark(friend.getFriend_remark());
-            friendGroupBean.setFriend_flag(String.valueOf(friend.getFriend_flag()));
+        if (list_friend!=null){
+            for (PersonFriend personfriend:list_friend){
+                FriendGroupBean friend = new FriendGroupBean();
 
-            List<PersonInfomation> personInfos = DataSupport.where("user_id = ?", String.valueOf(friend_id)).find(PersonInfomation.class);
-            String path = "";
-            String name = "";
-            String job = "";
-            String age = "";
-            String sex = "";
-            for (PersonInfomation personInfomation : personInfos) {
-                path = personInfomation.getUser_image_head();
-                name = personInfomation.getUser_name();
-                job = personInfomation.getJob();
-                age = personInfomation.getUser_brithday();//这里少一步计算年龄的功能...恩...之后再写...记得啊！！！
-                sex = personInfomation.getUser_sex();
+                int id = personfriend.getFriend_id();
+                String remark = personfriend.getFriend_remark();
+                String relation = personfriend.getFriend_relation();
+                String head_image_url = "";
+                String user_name = "";
+                String job = "";
+                int age = 0;
+                int friend_id = 0;
+                String sex = "";
+                String flag = "";
 
+                List<PersonInfomation> information = DataSupport.where("id = ?", String.valueOf(id)).find(PersonInfomation.class);
+                for (PersonInfomation person:information){
+                    head_image_url = person.getPortraitUrl();
+                    user_name = person.getUsername();
+                    job = person.getCareer();
+                    age = person.getAge();
+                    sex = person.getGender();
+                    friend_id = person.getId();
+                }
+
+                friend.setFriend_remark(remark);
+                friend.setHead_image_path(head_image_url);
+                friend.setFriend_name(user_name);
+                friend.setFriend_job(job);
+                friend.setFriend_age(String.valueOf(age));
+                friend.setFriend_sex(sex);
+                if (friend_id==care_id){
+                    flag = "2";
+                }else if (friend_id==becare_id){
+                    flag = "3";
+                }else {
+                    flag = "1";
+                }
+                friend.setFriend_flag(flag);
+                list.add(friend);
             }
-            friendGroupBean.setHead_image_path(path);
-            friendGroupBean.setFriend_name(name);
-            friendGroupBean.setFriend_job(job);
-            friendGroupBean.setFriend_age(age);
-            friendGroupBean.setFriend_sex(sex);
-
-            list.add(friendGroupBean);
         }
+
 
         FriendGroupBean friendGroupBean = new FriendGroupBean();
         friendGroupBean.setFriend_name("#/A");

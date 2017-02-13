@@ -71,12 +71,12 @@ public class MainActivity extends AppCompatActivity {
                 String User_login_pwd = edLoginPwd.getText().toString();
 
                 //从数据库拿到信息
-                List<PersonInfomation> login_db_list = DataSupport.where("user_name = ?",User_login_id).find(PersonInfomation.class);
+                List<PersonInfomation> login_db_list = DataSupport.where("username = ?",User_login_id).find(PersonInfomation.class);
                 String login_db_name = "";
                 String login_db_pwd = "";
                 for (PersonInfomation personInfomation:login_db_list){
-                    login_db_name = personInfomation.getUser_name();
-                    login_db_pwd = personInfomation.getUser_pwd();
+                    login_db_name = personInfomation.getUsername();
+                    login_db_pwd = personInfomation.getPassword();
                 }
 
                 Log.d("login","tv_name:"+User_login_id);
@@ -115,12 +115,12 @@ public class MainActivity extends AppCompatActivity {
                 String User_login_pwd = edLoginPwd.getText().toString();
 
                 //从数据库拿到信息
-                List<PersonInfomation> login_db_list = DataSupport.where("user_name = ?",User_login_id).find(PersonInfomation.class);
+                List<PersonInfomation> login_db_list = DataSupport.where("username = ?",User_login_id).find(PersonInfomation.class);
                 String login_db_name = "";
                 String login_db_pwd = "";
                 for (PersonInfomation personInfomation:login_db_list){
-                    login_db_name = personInfomation.getUser_name();
-                    login_db_pwd = personInfomation.getUser_pwd();
+                    login_db_name = personInfomation.getUsername();
+                    login_db_pwd = personInfomation.getPassword();
                 }
 
                 Log.d("login","tv_name:"+User_login_id);
@@ -154,7 +154,8 @@ public class MainActivity extends AppCompatActivity {
         tvChangePwd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //忘记密码点击事件
+                //还没写
             }
         });
 

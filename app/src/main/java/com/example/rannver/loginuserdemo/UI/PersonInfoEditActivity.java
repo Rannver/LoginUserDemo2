@@ -104,19 +104,19 @@ public class PersonInfoEditActivity extends AppCompatActivity {
         String phone = "";
         String head_image_path = "";
 
-        List<PersonInfomation> info_list = DataSupport.where("user_name = ?",intent_name).find(PersonInfomation.class);
+        List<PersonInfomation> info_list = DataSupport.where("username = ?",intent_name).find(PersonInfomation.class);
         for (PersonInfomation personInfomation:info_list){
-            sex = personInfomation.getUser_sex();
-            birthday = personInfomation.getUser_brithday();
-            address = personInfomation.getUser_address();
-            job = personInfomation.getJob();
-            phone = personInfomation.getPhone();
-            head_image_path = personInfomation.getUser_image_head();
+            sex = personInfomation.getGender();
+//            birthday = String.valueOf(personInfomation.getBirthday());//这里需要注意
+            address = personInfomation.getAddress();
+            job = personInfomation.getCareer();
+            phone = String.valueOf(personInfomation.getPhoneNumber());
+            head_image_path = personInfomation.getPortraitUrl();
         }
         System.out.println("edit_Info:"+sex+"，"+birthday+"，"+address+"，"+job+"，"+phone+"，"+head_image_path);
         //可编辑信息显示
         ShowSex(sex);  //性别显示
-        ShowBirthday(birthday);  //年龄显示
+//        ShowBirthday(birthday);  //年龄显示
         ShowHeadImage(head_image_path);  //头像显示
         edEditAddress.setText(address);
         edEditJob.setText(job);
@@ -176,6 +176,7 @@ public class PersonInfoEditActivity extends AppCompatActivity {
 
     //头像显示
     private void ShowHeadImage(String head_image_path) {
+        //之后记得增加来自后台的url的解析显示
         if (head_image_path!=null){
             File file = new File(head_image_path);
             if (file.exists()){
@@ -189,17 +190,17 @@ public class PersonInfoEditActivity extends AppCompatActivity {
     private void LoadSave(String year, String month, String day, String address, String job, String phone) {
         PersonInfomation personinfo = new PersonInfomation();
         if (image_head_uri!=null){
-            personinfo.setUser_image_head(image_head_uri.getPath());
+            personinfo.setPortraitUrl(image_head_uri.getPath());
         }
-        personinfo.setUser_address(address);
-        personinfo.setJob(job);
-        personinfo.setPhone(phone);
-        personinfo.setUser_brithday(Setbirthday(year,month,day));
-        personinfo.updateAll("user_name = ?",intent_name);
+        personinfo.setAddress(address);
+        personinfo.setCareer(job);
+        personinfo.setPhoneNumber(Long.parseLong(phone));
+        personinfo.setBirthday(Setbirthday(year,month,day));
+        personinfo.updateAll("username = ?",intent_name);
     }
 
     //设置出生日期Date
-    private String Setbirthday(String year,String month,String day){
+    private Date Setbirthday(String year,String month,String day){
         Date date_signup = new Date();
         String date_str = year + "-" + month + "-" + day;
         SimpleDateFormat sdf_date = new SimpleDateFormat("yyyy-mm-dd");
@@ -208,7 +209,7 @@ public class PersonInfoEditActivity extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return date_str;
+        return date_signup;
     }
 
     //性别判断

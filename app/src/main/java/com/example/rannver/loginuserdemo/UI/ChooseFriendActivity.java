@@ -69,29 +69,29 @@ public class ChooseFriendActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String checkstr = edChooseInput.getText().toString();
-                List<PersonInfomation> list_id = DataSupport. where("user_id = ?",checkstr).find(PersonInfomation.class);
-                List<PersonInfomation> list_name = DataSupport.where("user_name = ?",checkstr).find(PersonInfomation.class);
+                List<PersonInfomation> list_id = DataSupport. where("id = ?",checkstr).find(PersonInfomation.class);
+                List<PersonInfomation> list_name = DataSupport.where("username = ?",checkstr).find(PersonInfomation.class);
                 List<ChooseGroupBean> list_search = new ArrayList<ChooseGroupBean>();
                 Log.d("size",list_id.size()+","+list_name.size());
                 if (list_id.size()>0){
                     for (PersonInfomation personInfomation:list_id){
                        ChooseGroupBean GroupBean = new ChooseGroupBean();
-                        GroupBean.setFriend_id(String.valueOf(personInfomation.getUser_id()));
-                        GroupBean.setFriend_name(personInfomation.getUser_name());
-                        GroupBean.setFriend_sex(personInfomation.getUser_sex());
-                        GroupBean.setFriend_age(personInfomation.getUser_brithday());//之后记得换成年龄计算
-                        System.out.println("information:"+personInfomation.getUser_id()+","+personInfomation.getUser_name()+","+personInfomation.getUser_sex()+","+personInfomation.getUser_brithday());
+                        GroupBean.setFriend_id(String.valueOf(personInfomation.getId()));
+                        GroupBean.setFriend_name(personInfomation.getUsername());
+                        GroupBean.setFriend_sex(personInfomation.getGender());
+                        GroupBean.setFriend_age(String.valueOf(personInfomation.getAge()));//之后记得换成年龄计算
+                        System.out.println("information:"+personInfomation.getId()+","+personInfomation.getUsername()+","+personInfomation.getGender()+","+personInfomation.getAge());
                         list_search.add(GroupBean);
                     }
                 }
                 if (list_name.size()>0){
                     for (PersonInfomation personInfomation:list_name){
                         ChooseGroupBean GroupBean = new ChooseGroupBean();
-                        GroupBean.setFriend_id(String.valueOf(personInfomation.getUser_id()));
-                        GroupBean.setFriend_name(personInfomation.getUser_name());
-                        GroupBean.setFriend_sex(personInfomation.getUser_sex());
-                        GroupBean.setFriend_age(personInfomation.getUser_brithday());//之后记得换成年龄计算
-                        System.out.println("information:"+personInfomation.getUser_id()+","+personInfomation.getUser_name()+","+personInfomation.getUser_sex()+","+personInfomation.getUser_brithday());
+                        GroupBean.setFriend_id(String.valueOf(personInfomation.getId()));
+                        GroupBean.setFriend_name(personInfomation.getUsername());
+                        GroupBean.setFriend_sex(personInfomation.getGender());
+                        GroupBean.setFriend_age(String.valueOf(personInfomation.getAge()));//之后记得换成年龄计算
+                        System.out.println("information:"+personInfomation.getId()+","+personInfomation.getUsername()+","+personInfomation.getGender()+","+personInfomation.getAge());
                         list_search.add(GroupBean);
                     }
                 }

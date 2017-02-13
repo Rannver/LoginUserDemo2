@@ -18,6 +18,7 @@ import com.example.rannver.loginuserdemo.Util.CircleImageView;
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -68,36 +69,37 @@ public class PersonInfoDetaiActivity extends AppCompatActivity {
         Toast.makeText(PersonInfoDetaiActivity.this,intent_flag+","+intent_name,Toast.LENGTH_SHORT).show();
 
         //个人信息页面显示
-        List<PersonInfomation> info_list = DataSupport.where("user_name = ?",intent_name).find(PersonInfomation.class);
+        List<PersonInfomation> info_list = DataSupport.where("username = ?",intent_name).find(PersonInfomation.class);
 
         id ="";
         String name = "";
         String sex = "";
-        String birthday = "";
+        Date birthday = null;
         String address = "";
         String job = "";
         String phone = "";
         String head_image_path = "";
 
         for (PersonInfomation personInfomation:info_list){
-            id = String.valueOf(personInfomation.getUser_id());
-            name = personInfomation.getUser_name();
-            sex = personInfomation.getUser_sex();
-            birthday = personInfomation.getUser_brithday();
-            address = personInfomation.getUser_address();
-            job = personInfomation.getJob();
-            phone = personInfomation.getPhone();
-            head_image_path = personInfomation.getUser_image_head();
+            id = String.valueOf(personInfomation.getId());
+            name = personInfomation.getUsername();
+            sex = personInfomation.getGender();
+            birthday = personInfomation.getBirthday();
+            address = personInfomation.getAddress();
+            job = personInfomation.getCareer();
+            phone = String.valueOf(personInfomation.getPhoneNumber());
+            head_image_path = personInfomation.getPortraitUrl();
         }
         System.out.println("Info:"+id+"，"+name+"，"+sex+"，"+birthday+"，"+address+"，"+job+"，"+phone+"，"+head_image_path);
         tvInfoDetaiId.setText(id);
         tvInfoDetaiName.setText(name);
         tvInfoDetaiSex.setText(sex);
-        tvInfoDetaiYear.setText(birthday);
+        tvInfoDetaiYear.setText((CharSequence) birthday);//这里需要做进一步的日期显示
         tvInfoDetaiAddress.setText(address);
         tvInfoDetaiJob.setText(job);
         tvInfoDetaiPhone.setText(phone);
         //设置图片信息
+        //本地路径方式，如果是后台的Url需要用picasso
         if (head_image_path!=null){
             File file = new File(head_image_path);
             if (file.exists()){

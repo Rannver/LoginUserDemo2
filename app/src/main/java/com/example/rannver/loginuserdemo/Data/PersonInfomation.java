@@ -13,86 +13,132 @@ import java.util.List;
 
 public class PersonInfomation extends DataSupport{
 
-    private int   user_id;
-    private String user_name;
-    private String user_pwd;
-    private String user_image_head;
-    private String user_sex;
-    private String user_brithday;
-    private String user_address;
-    private String job;
-    private String phone;
+    private int id;  //用户id
+    private int age; //用户年龄
+    private int care; //特别关心谁
+    private int becare;  //被谁特别关心
+    private String gender; //性别
+    private long phoneNumber; //电话号码
+    private String name;  //姓名
+    private String career;//职业
+    private String address; //住址
+    private String username;//用户名
 
-    public int getUser_id() {
-        return user_id;
+    public int getId() {
+        return id;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public int getAge() {
+        return age;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setAge(int age) {
+        this.age = age;
     }
 
-    public String getUser_pwd() {
-        return user_pwd;
+    public int getCare() {
+        return care;
     }
 
-    public void setUser_pwd(String user_pwd) {
-        this.user_pwd = user_pwd;
+    public void setCare(int care) {
+        this.care = care;
     }
 
-    public String getUser_image_head() {
-        return user_image_head;
+    public int getBecare() {
+        return becare;
     }
 
-    public void setUser_image_head(String user_image_head) {
-        this.user_image_head = user_image_head;
+    public void setBecare(int becare) {
+        this.becare = becare;
     }
 
-    public String getUser_sex() {
-        return user_sex;
+    public String getGender() {
+        return gender;
     }
 
-    public void setUser_sex(String user_sex) {
-        this.user_sex = user_sex;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
-    public String getUser_brithday() {
-        return user_brithday;
+    public long getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setUser_brithday(String user_brithday) {
-        this.user_brithday = user_brithday;
+    public void setPhoneNumber(long phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
-    public String getUser_address() {
-        return user_address;
+    public String getName() {
+        return name;
     }
 
-    public void setUser_address(String user_address) {
-        this.user_address = user_address;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getJob() {
-        return job;
+    public String getCareer() {
+        return career;
     }
 
-    public void setJob(String job) {
-        this.job = job;
+    public void setCareer(String career) {
+        this.career = career;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getAddress() {
+        return address;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setAddress(String address) {
+        this.address = address;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPortraitUrl() {
+        return portraitUrl;
+    }
+
+    public void setPortraitUrl(String portraitUrl) {
+        this.portraitUrl = portraitUrl;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
+    public List<PersonFriend> getFriendList() {
+        return friendList;
+    }
+
+    public void setFriendList(List<PersonFriend> friendList) {
+        this.friendList = friendList;
+    }
+
+    private String password;//用户密码
+    private String portraitUrl;//头像Url
+    private Date birthday;//生日
+    private List<PersonFriend> friendList;//好友列表
 
 }

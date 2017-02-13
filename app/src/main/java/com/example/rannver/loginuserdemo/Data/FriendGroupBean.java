@@ -11,7 +11,7 @@ public class FriendGroupBean {
     private String friend_id;
     private String friend_name;
     private String friend_remark;
-    private String friend_flag;
+    private String friend_flag;  //普通好友1，特别关心2，被特别关心3
     private String friend_job;
     private String friend_age;
     private String friend_sex;
