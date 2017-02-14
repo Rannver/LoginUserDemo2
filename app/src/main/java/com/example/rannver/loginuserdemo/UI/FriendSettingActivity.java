@@ -127,6 +127,16 @@ public class FriendSettingActivity extends AppCompatActivity {
                 break;
             case "change":
                 //更改
+                List<PersonInfomation> personInfomations_change = DataSupport.where("username = ?",intent_name).find(PersonInfomation.class);
+                int chage_user_id = 0;
+                for (PersonInfomation personInfomation:personInfomations_change){
+                    chage_user_id = personInfomation.getId();
+                }
+                PersonFriend personFriend_chage = new PersonFriend();
+                personFriend_chage.setFriend_remark(remark);
+                personFriend_chage.setFriend_relationship(relation);
+                personFriend_chage.setPersoninfomation_id(chage_user_id);
+                personFriend_chage.updateAll("personinfomation_id = ? and friend_id = ?", String.valueOf(chage_user_id),intent_friend_id);
                 break;
             default:
                 break;

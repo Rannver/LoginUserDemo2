@@ -1,6 +1,8 @@
 package com.example.rannver.loginuserdemo.UI;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -14,9 +16,11 @@ import com.example.rannver.loginuserdemo.Data.PersonFriend;
 import com.example.rannver.loginuserdemo.Data.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.CircleImageView;
+import com.example.rannver.loginuserdemo.Util.PopuWindowConfirm;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -110,6 +114,14 @@ public class FriendInfoDetailActivity extends AppCompatActivity {
                 startActivity(intent_set);
             }
         });
+        //点击删除好友事件
+        btuFriendDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopuWindowConfirm pop = new PopuWindowConfirm(FriendInfoDetailActivity.this,FriendInfoDetailActivity.this,intent_name,intent_flag);
+                pop.DeleteFriendPopu(tvInfoFirendName.getText().toString(),tvInfoFriendRemark.getText().toString(),intent_friend_id,intent_name);
+            }
+        });
     }
 
     private void ShowFriendInfo() {
@@ -158,6 +170,13 @@ public class FriendInfoDetailActivity extends AppCompatActivity {
         tvInfoFirendPhone.setText(phone);
         tvInfoFriendRelation.setText(relation);
         tvInfoFriendRemark.setText(remark);
+        if (path != null) {
+            File file = new File(path);
+            if (file.exists()) {
+                Bitmap bitmap = BitmapFactory.decodeFile(path);
+                ivDetaiHead.setImageBitmap(bitmap);
+            }
+        }
 
     }
 

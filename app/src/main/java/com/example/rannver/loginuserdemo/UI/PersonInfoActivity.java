@@ -220,17 +220,6 @@ public class PersonInfoActivity extends AppCompatActivity {
             }
         }
 
-
-        FriendGroupBean friendGroupBean = new FriendGroupBean();
-        friendGroupBean.setFriend_name("#/A");
-        friendGroupBean.setFriend_job("#/A");
-        friendGroupBean.setFriend_age("#/A");
-        friendGroupBean.setFriend_sex("#/A");
-        friendGroupBean.setFriend_remark("#/A");
-        friendGroupBean.setFriend_id("1");
-
-        list.add(friendGroupBean);
-
         return list;
     }
 }
