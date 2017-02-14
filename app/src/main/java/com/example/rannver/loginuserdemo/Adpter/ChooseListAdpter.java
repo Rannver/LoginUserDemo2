@@ -77,7 +77,8 @@ public class ChooseListAdpter extends RecyclerView.Adapter<ChooseListAdpter.View
                     Intent intent_set = new Intent(Activity_choose, FriendSettingActivity.class);
                     intent_set.putExtra("login_flag",intent_flag);
                     intent_set.putExtra("login_name",intent_name);
-                    intent_set.putExtra("friend_name",Choose_List.get(position).getFriend_name());//因为没有返回id所以先拿name做搜索标识符
+                    intent_set.putExtra("friend_id",Choose_List.get(position).getFriend_id());//返回好友id
+                    intent_set.putExtra("friend_flag","add");
                     Context_choose.startActivity(intent_set);
                 }else {
                     Toast.makeText(Activity_choose,"不能添加自己为好友",Toast.LENGTH_SHORT).show();

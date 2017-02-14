@@ -23,6 +23,7 @@ import org.litepal.crud.DataSupport;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -67,7 +68,7 @@ public class PersonInfoActivity extends AppCompatActivity {
         Toast.makeText(PersonInfoActivity.this, intent_flag + "，" + intent_name, Toast.LENGTH_SHORT).show();
 
         //个人信息页面显示
-        List<PersonInfomation> info_list = DataSupport.where("username = ?", intent_name).find(PersonInfomation.class);
+        final List<PersonInfomation> info_list = DataSupport.where("username = ?", intent_name).find(PersonInfomation.class);
         String name = "";
         String sex = "";
         String job = "";
@@ -80,13 +81,16 @@ public class PersonInfoActivity extends AppCompatActivity {
             name = personInfomation.getUsername();
             sex = personInfomation.getGender();
             job = personInfomation.getCareer();
-            head_image_path = personInfomation.getPortraitUrl();
+            head_image_path = personInfomation.getPortrait_url();
             id = personInfomation.getId();
             care_id = personInfomation.getCare();
             becare_id = personInfomation.getBecare();
-            list_friend = personInfomation.getFriendList();
+            list_friend = personInfomation.getFriend_list();
+
+            Date birthday = personInfomation.getBirthday();
+            System.out.println("info_birthday:"+birthday);
         }
-        System.out.println("Info:" + name + " " + sex + " " + job + " " + head_image_path);
+        System.out.println("Info:" + name + " " + sex + " " + job + " " + head_image_path+" "+list_friend.size());
         //设置文字信息
         infoUsername.setText(name);
         infoUsersex.setText(sex);
@@ -104,18 +108,24 @@ public class PersonInfoActivity extends AppCompatActivity {
         //好友页面显示
         if (intent_flag != null) {
             if (intent_flag.equals("1") || intent_flag.equals("2")) {
-                List<FriendGroupBean> friendlist = LoadFriendData(list_friend,care_id,becare_id);
+                final List<FriendGroupBean> friendlist = LoadFriendData(list_friend,care_id,becare_id);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
                 listFriend.setLayoutManager(linearLayoutManager);
                 FriendGroupAdpter friendGroupAdpter = new FriendGroupAdpter(friendlist, intent_flag);
                 friendGroupAdpter.SetOnItemClickListener(new FriendGroupAdpter.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        //2017.2.11设置RecycleView的监听事件
+                        //短按进入好友详细信息界面
+                        Intent intent_detail = new Intent(PersonInfoActivity.this,FriendInfoDetailActivity.class);
+                        intent_detail.putExtra("login_flag",intent_flag);
+                        intent_detail.putExtra("login_name",intent_name);
+                        intent_detail.putExtra("friend_id",friendlist.get(position).getFriend_id());
+                        startActivity(intent_detail);
                     }
 
                     @Override
                     public void onItemLongClick(View view, int position) {
+                        //长按设置为特别关心
 
                     }
                 });
@@ -172,7 +182,7 @@ public class PersonInfoActivity extends AppCompatActivity {
 
                 int id = personfriend.getFriend_id();
                 String remark = personfriend.getFriend_remark();
-                String relation = personfriend.getFriend_relation();
+                String relation = personfriend.getFriend_relationship();
                 String head_image_url = "";
                 String user_name = "";
                 String job = "";
@@ -183,7 +193,7 @@ public class PersonInfoActivity extends AppCompatActivity {
 
                 List<PersonInfomation> information = DataSupport.where("id = ?", String.valueOf(id)).find(PersonInfomation.class);
                 for (PersonInfomation person:information){
-                    head_image_url = person.getPortraitUrl();
+                    head_image_url = person.getPortrait_url();
                     user_name = person.getUsername();
                     job = person.getCareer();
                     age = person.getAge();
@@ -191,6 +201,7 @@ public class PersonInfoActivity extends AppCompatActivity {
                     friend_id = person.getId();
                 }
 
+                friend.setFriend_id(String.valueOf(id));
                 friend.setFriend_remark(remark);
                 friend.setHead_image_path(head_image_url);
                 friend.setFriend_name(user_name);
@@ -215,6 +226,8 @@ public class PersonInfoActivity extends AppCompatActivity {
         friendGroupBean.setFriend_job("#/A");
         friendGroupBean.setFriend_age("#/A");
         friendGroupBean.setFriend_sex("#/A");
+        friendGroupBean.setFriend_remark("#/A");
+        friendGroupBean.setFriend_id("1");
 
         list.add(friendGroupBean);
 

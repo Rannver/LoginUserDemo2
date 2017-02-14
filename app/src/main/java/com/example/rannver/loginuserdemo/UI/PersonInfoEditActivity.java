@@ -98,7 +98,7 @@ public class PersonInfoEditActivity extends AppCompatActivity {
         tvInfoEditId.setText(intent_id);
         tvInfoEditName.setText(intent_name);
         String sex = "";
-        String birthday = "";
+        Date birthday = new Date();
         String address = "";
         String job = "";
         String phone = "";
@@ -107,16 +107,16 @@ public class PersonInfoEditActivity extends AppCompatActivity {
         List<PersonInfomation> info_list = DataSupport.where("username = ?",intent_name).find(PersonInfomation.class);
         for (PersonInfomation personInfomation:info_list){
             sex = personInfomation.getGender();
-//            birthday = String.valueOf(personInfomation.getBirthday());//这里需要注意
+            birthday = personInfomation.getBirthday();
             address = personInfomation.getAddress();
             job = personInfomation.getCareer();
-            phone = String.valueOf(personInfomation.getPhoneNumber());
-            head_image_path = personInfomation.getPortraitUrl();
+            phone = String.valueOf(personInfomation.getPhone_number());
+            head_image_path = personInfomation.getPortrait_url();
         }
         System.out.println("edit_Info:"+sex+"，"+birthday+"，"+address+"，"+job+"，"+phone+"，"+head_image_path);
         //可编辑信息显示
         ShowSex(sex);  //性别显示
-//        ShowBirthday(birthday);  //年龄显示
+        ShowBirthday(birthday);  //年龄显示
         ShowHeadImage(head_image_path);  //头像显示
         edEditAddress.setText(address);
         edEditJob.setText(job);
@@ -190,22 +190,22 @@ public class PersonInfoEditActivity extends AppCompatActivity {
     private void LoadSave(String year, String month, String day, String address, String job, String phone) {
         PersonInfomation personinfo = new PersonInfomation();
         if (image_head_uri!=null){
-            personinfo.setPortraitUrl(image_head_uri.getPath());
+            personinfo.setPortrait_url(image_head_uri.getPath());
         }
         personinfo.setAddress(address);
         personinfo.setCareer(job);
-        personinfo.setPhoneNumber(Long.parseLong(phone));
+        personinfo.setPhone_number(Long.parseLong(phone));
         personinfo.setBirthday(Setbirthday(year,month,day));
         personinfo.updateAll("username = ?",intent_name);
     }
 
     //设置出生日期Date
     private Date Setbirthday(String year,String month,String day){
-        Date date_signup = new Date();
         String date_str = year + "-" + month + "-" + day;
-        SimpleDateFormat sdf_date = new SimpleDateFormat("yyyy-mm-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date_signup = null;
         try {
-            date_signup = sdf_date.parse(date_str);
+            date_signup = sdf.parse(date_str);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -265,14 +265,17 @@ public class PersonInfoEditActivity extends AppCompatActivity {
         }
     }
     //生日显示
-    private void ShowBirthday(String birthday){
-        String year;
-        String month;
-        String day;
+    private void ShowBirthday(Date birthday){
+        String year = "";
+        String month = "";
+        String day = "";
+        String str = BirthdayDateToStr(birthday);
 
-        year = birthday.substring(0,birthday.indexOf("-"));
-        month = birthday.substring(birthday.indexOf("-")+1,birthday.lastIndexOf("-"));
-        day = birthday.substring(birthday.lastIndexOf("-")+1);
+        if (!str.equals("")){
+            year = str.substring(0,str.indexOf("-"));
+            month = str.substring(str.indexOf("-")+1,str.lastIndexOf("-"));
+            day = str.substring(str.lastIndexOf("-")+1);
+        }
 
 
         System.out.println("birthday:"+year+","+month+","+day);
@@ -281,6 +284,16 @@ public class PersonInfoEditActivity extends AppCompatActivity {
         edEditMonth.setText(month);
         edEditDay.setText(day);
 
+    }
+    private String BirthdayDateToStr(Date date){
+        String string = "";
+
+        if (date!=null){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            string = sdf.format(date);
+            System.out.println("detail_birthday:"+string);
+        }
+        return string;
     }
     //裁剪器
     private void startPhoneZoom(Uri uri) {

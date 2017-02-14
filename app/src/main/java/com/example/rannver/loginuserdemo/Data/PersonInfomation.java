@@ -3,6 +3,7 @@ package com.example.rannver.loginuserdemo.Data;
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,11 +19,15 @@ public class PersonInfomation extends DataSupport{
     private int care; //特别关心谁
     private int becare;  //被谁特别关心
     private String gender; //性别
-    private long phoneNumber; //电话号码
+    private long phone_number; //电话号码
     private String name;  //姓名
     private String career;//职业
     private String address; //住址
     private String username;//用户名
+    private String password;//用户密码
+    private String portrait_url;//头像Url
+    private Date birthday;//生日
+    private List<PersonFriend> friend_list = new ArrayList<PersonFriend>();//好友列表
 
     public int getId() {
         return id;
@@ -64,12 +69,12 @@ public class PersonInfomation extends DataSupport{
         this.gender = gender;
     }
 
-    public long getPhoneNumber() {
-        return phoneNumber;
+    public long getPhone_number() {
+        return phone_number;
     }
 
-    public void setPhoneNumber(long phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhone_number(long phone_number) {
+        this.phone_number = phone_number;
     }
 
     public String getName() {
@@ -112,12 +117,12 @@ public class PersonInfomation extends DataSupport{
         this.password = password;
     }
 
-    public String getPortraitUrl() {
-        return portraitUrl;
+    public String getPortrait_url() {
+        return portrait_url;
     }
 
-    public void setPortraitUrl(String portraitUrl) {
-        this.portraitUrl = portraitUrl;
+    public void setPortrait_url(String portrait_url) {
+        this.portrait_url = portrait_url;
     }
 
     public Date getBirthday() {
@@ -128,17 +133,11 @@ public class PersonInfomation extends DataSupport{
         this.birthday = birthday;
     }
 
-    public List<PersonFriend> getFriendList() {
-        return friendList;
+    public List<PersonFriend> getFriend_list() {
+        return DataSupport.where("personinfomation_id = ?", String.valueOf(id)).find(PersonFriend.class);
     }
 
-    public void setFriendList(List<PersonFriend> friendList) {
-        this.friendList = friendList;
+    public void setFriend_list(List<PersonFriend> friend_list) {
+        this.friend_list = friend_list;
     }
-
-    private String password;//用户密码
-    private String portraitUrl;//头像Url
-    private Date birthday;//生日
-    private List<PersonFriend> friendList;//好友列表
-
 }

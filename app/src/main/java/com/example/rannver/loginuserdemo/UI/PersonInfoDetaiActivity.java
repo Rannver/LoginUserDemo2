@@ -18,6 +18,7 @@ import com.example.rannver.loginuserdemo.Util.CircleImageView;
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -74,7 +75,7 @@ public class PersonInfoDetaiActivity extends AppCompatActivity {
         id ="";
         String name = "";
         String sex = "";
-        Date birthday = null;
+        Date birthday = new Date();
         String address = "";
         String job = "";
         String phone = "";
@@ -85,16 +86,17 @@ public class PersonInfoDetaiActivity extends AppCompatActivity {
             name = personInfomation.getUsername();
             sex = personInfomation.getGender();
             birthday = personInfomation.getBirthday();
+            System.out.println("detail_birthday:"+personInfomation.getBirthday());
             address = personInfomation.getAddress();
             job = personInfomation.getCareer();
-            phone = String.valueOf(personInfomation.getPhoneNumber());
-            head_image_path = personInfomation.getPortraitUrl();
+            phone = String.valueOf(personInfomation.getPhone_number());
+            head_image_path = personInfomation.getPortrait_url();
         }
         System.out.println("Info:"+id+"，"+name+"，"+sex+"，"+birthday+"，"+address+"，"+job+"，"+phone+"，"+head_image_path);
         tvInfoDetaiId.setText(id);
         tvInfoDetaiName.setText(name);
         tvInfoDetaiSex.setText(sex);
-        tvInfoDetaiYear.setText((CharSequence) birthday);//这里需要做进一步的日期显示
+        tvInfoDetaiYear.setText(BirthdayDateToStr(birthday));//这里需要做进一步的日期显示
         tvInfoDetaiAddress.setText(address);
         tvInfoDetaiJob.setText(job);
         tvInfoDetaiPhone.setText(phone);
@@ -138,6 +140,18 @@ public class PersonInfoDetaiActivity extends AppCompatActivity {
             }
         });
 
+    }
 
+    private String BirthdayDateToStr(Date date){
+        String string;
+
+        if (date!=null){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            string = sdf.format(date);
+            System.out.println("detail_birthday:"+string);
+        }else {
+            string = "#/A";
+        }
+        return string;
     }
 }

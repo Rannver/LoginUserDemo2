@@ -60,7 +60,7 @@ public class FriendGroupAdpter extends RecyclerView.Adapter<FriendGroupAdpter.Vi
         String name = friend_list.get(position).getFriend_remark()+"（"+friend_list.get(position).getFriend_name()+"）";
         String info = friend_list.get(position).getFriend_job()+"  "+friend_list.get(position).getFriend_sex()+"  "+friend_list.get(position).getFriend_age();
         holder.tv_name.setText(name);
-        holder.tv_name.setText(info);
+        holder.tv_info.setText(info);
         //设置关心标识
 //        String flag = friend_list.get(position).getFriend_flag();
 //        switch (flag){

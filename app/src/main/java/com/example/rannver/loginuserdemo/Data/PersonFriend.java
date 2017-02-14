@@ -12,6 +12,8 @@ public class PersonFriend extends DataSupport{
     private int friend_id;
     private String friend_relationship;
     private String friend_remark;
+    private PersonInfomation personInfomation;
+    private int personinfomation_id;
 
     public int getFriend_id() {
         return friend_id;
@@ -21,11 +23,11 @@ public class PersonFriend extends DataSupport{
         this.friend_id = friend_id;
     }
 
-    public String getFriend_relation() {
+    public String getFriend_relationship() {
         return friend_relationship;
     }
 
-    public void setFriend_relation(String friend_relationship) {
+    public void setFriend_relationship(String friend_relationship) {
         this.friend_relationship = friend_relationship;
     }
 
@@ -35,5 +37,21 @@ public class PersonFriend extends DataSupport{
 
     public void setFriend_remark(String friend_remark) {
         this.friend_remark = friend_remark;
+    }
+
+    public PersonInfomation getPersonInfomation() {
+        return personInfomation;
+    }
+
+    public void setPersonInfomation(PersonInfomation personInfomation) {
+        this.personInfomation = personInfomation;
+    }
+
+    public int getPersoninfomation_id() {
+        return personinfomation_id;
+    }
+
+    public void setPersoninfomation_id(int personinfomation_id) {
+        this.personinfomation_id = personinfomation_id;
     }
 }

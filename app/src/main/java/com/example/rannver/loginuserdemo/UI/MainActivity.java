@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.rannver.loginuserdemo.Data.PersonFriend;
 import com.example.rannver.loginuserdemo.Data.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.PopuWindowTvInfo;
@@ -17,6 +18,7 @@ import com.example.rannver.loginuserdemo.Util.PopuWindowTvInfo;
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -38,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.ed_login_pwd)
     EditText edLoginPwd;
 
-
+    private String intent_name = "";
+    private String intent_pwd = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,18 +51,15 @@ public class MainActivity extends AppCompatActivity {
 
         //建立数据库
         LitePal.getDatabase();
-        //存一个admin
-//        PersonInfomation personInfomation = new PersonInfomation();
-//        personInfomation.setUser_name("admin");
-//        personInfomation.setUser_pwd("admin");
-//        personInfomation.save();
-        //查询是否存在admin
-//        List<PersonInfomation> list = DataSupport.where("user_name = ?","admin").find(PersonInfomation.class);
-//        String str = null;
-//        for(PersonInfomation p:list){
-//            str = p.getUser_name()+" "+p.getUser_pwd();
-//        }
-//        Log.d("admin",str);
+
+        //显示来自注册界面跳转的信息
+        Intent intent_get = getIntent();
+        intent_name = intent_get.getStringExtra("signup_name");
+        intent_pwd =  intent_get.getStringExtra("signup_pwd");
+        if (intent_name!=null&&intent_pwd!=null){
+            edLoginId.setText(intent_name);
+            edLoginPwd.setText(intent_pwd);
+        }
 
         //普通登录入口
         btuLogin1.setOnClickListener(new View.OnClickListener() {

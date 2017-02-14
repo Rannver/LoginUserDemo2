@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 
+import com.example.rannver.loginuserdemo.Data.PersonFriend;
 import com.example.rannver.loginuserdemo.Data.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.CircleImageView;
@@ -27,6 +28,7 @@ import org.litepal.crud.DataSupport;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -156,7 +158,7 @@ public class SignUpActivity extends AppCompatActivity {
                     System.out.println("用户名："+user_name+"\n"
                                        +"用户密码："+user_pwd1+"\n"
                                        +"用户性别："+user_sex+"\n"
-                                       +"用户生日:"+Setbirthday(year,month,day)+"\n"
+                                       +"用户生日:"+SetbirthdayDate(year,month,day)+"\n"
                                        +"用户住址："+user_adress+"\n"
                                        +"用户职业:"+user_job+"\n"
                                        +"用户电话："+user_phone+"\n"
@@ -168,12 +170,14 @@ public class SignUpActivity extends AppCompatActivity {
                     personInfomation.setUsername(user_name);
                     personInfomation.setPassword(user_pwd1);
                     personInfomation.setGender(user_sex);
-                    personInfomation.setBirthday(Setbirthday(year,month,day));
+                    personInfomation.setBirthday(SetbirthdayDate(year,month,day));
+                    System.out.println("signup_birthday:"+personInfomation.getBirthday());
                     personInfomation.setAddress(user_adress);
                     personInfomation.setCareer(user_job);
-                    personInfomation.setPhoneNumber(Long.parseLong(user_phone));
-                    personInfomation.setPortraitUrl(path);
+                    personInfomation.setPhone_number(Long.parseLong(user_phone));
+                    personInfomation.setPortrait_url(path);
                     personInfomation.save();
+
 
                     //跳转至Login界面
                     Intent intent = new Intent(SignUpActivity.this,MainActivity.class);
@@ -213,12 +217,12 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     //设置出生日期Date
-    private Date Setbirthday(String year,String month,String day){
-        Date date_signup = new Date();
+    private Date SetbirthdayDate(String year,String month,String day) {
         String date_str = year + "-" + month + "-" + day;
-        SimpleDateFormat sdf_date = new SimpleDateFormat("yyyy-mm-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date_signup = null;
         try {
-            date_signup = sdf_date.parse(date_str);
+            date_signup = sdf.parse(date_str);
         } catch (ParseException e) {
             e.printStackTrace();
         }

@@ -22,6 +22,7 @@
         <activity android:name=".UI.PersonInfoEditActivity"></activity>
         <activity android:name=".UI.ChooseFriendActivity"></activity>
         <activity android:name=".UI.FriendSettingActivity"></activity>
+        <activity android:name=".UI.FriendInfoDetailActivity"></activity>
     </application>
     <!-- 读取 -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
