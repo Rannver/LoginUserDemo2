@@ -320,19 +320,24 @@ public class PersonInfoEditActivity extends AppCompatActivity {
             startPhoneZoom(image_head_uri);
         } else if (requestCode == 2) {
             //照片设置的情况下
-            Cursor cursor = this.getContentResolver().query(data.getData(),
-                    new String[]{MediaStore.Images.Media.DATA}, null, null, null);
-            //游标移到第一位，即从第一位开始读取
-            cursor.moveToFirst();
-            String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-            cursor.close();
-            //调用系统裁剪
-            startPhoneZoom(Uri.fromFile(new File(path)));
+            if (data!= null){
+                Cursor cursor = this.getContentResolver().query(data.getData(),
+                        new String[]{MediaStore.Images.Media.DATA}, null, null, null);
+                //游标移到第一位，即从第一位开始读取
+                cursor.moveToFirst();
+                String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                cursor.close();
+                //调用系统裁剪
+                startPhoneZoom(Uri.fromFile(new File(path)));
+            }
 
         } else if (requestCode == 3) {
             //返回裁剪结果
             //设置裁剪返回的位图
-            Bundle bundle = data.getExtras();
+            Bundle bundle = null;
+            if (data!=null){
+                bundle = data.getExtras();
+            }
             if (bundle != null) {
                 Bitmap bitmap = bundle.getParcelable("data");
                 //将裁剪后得到的位图在组件中显示

@@ -18,6 +18,7 @@ import com.example.rannver.loginuserdemo.Data.PersonFriend;
 import com.example.rannver.loginuserdemo.Data.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.CircleImageView;
+import com.example.rannver.loginuserdemo.Util.PopuWindowConfirm;
 
 import org.litepal.crud.DataSupport;
 
@@ -126,7 +127,12 @@ public class PersonInfoActivity extends AppCompatActivity {
                     @Override
                     public void onItemLongClick(View view, int position) {
                         //长按设置为特别关心
-
+                        PopuWindowConfirm popuWindowConfirm = new PopuWindowConfirm(PersonInfoActivity.this,PersonInfoActivity.this,intent_name,intent_flag);
+                        if (friendlist.get(position).getFriend_flag().equals("2")||friendlist.get(position).getFriend_flag().equals("4")){
+                            popuWindowConfirm.CancelCareFriend(friendlist.get(position).getFriend_name(),friendlist.get(position).getFriend_remark(),friendlist.get(position).getFriend_id(),intent_name);
+                        }else {
+                            popuWindowConfirm.SetCareFriend(friendlist.get(position).getFriend_name(),friendlist.get(position).getFriend_remark(),friendlist.get(position).getFriend_id(),intent_name);
+                        }
                     }
                 });
                 listFriend.setAdapter(friendGroupAdpter);
@@ -212,6 +218,8 @@ public class PersonInfoActivity extends AppCompatActivity {
                     flag = "2";
                 }else if (friend_id==becare_id){
                     flag = "3";
+                }else if (care_id==becare_id&&care_id!=0&&becare_id!=0){
+                    flag = "4";
                 }else {
                     flag = "1";
                 }
@@ -221,5 +229,11 @@ public class PersonInfoActivity extends AppCompatActivity {
         }
 
         return list;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
     }
 }

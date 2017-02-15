@@ -62,17 +62,19 @@ public class FriendGroupAdpter extends RecyclerView.Adapter<FriendGroupAdpter.Vi
         holder.tv_name.setText(name);
         holder.tv_info.setText(info);
         //设置关心标识
-//        String flag = friend_list.get(position).getFriend_flag();
-//        switch (flag){
-//            case "2":
-//                holder.iv_care.setImageResource(R.drawable.whocare_icon);
-//                break;
-//            case "3":
-//                holder.iv_care.setImageResource(R.drawable.carewho_icon);
-//                break;
-//            default:
-//                break;
-//        }
+        String flag = friend_list.get(position).getFriend_flag();
+        switch (flag){
+            case "2":
+                holder.iv_care.setImageResource(R.drawable.whocare_icon);
+                break;
+            case "3":
+                holder.iv_care.setImageResource(R.drawable.carewho_icon);
+                break;
+            case "4":
+                holder.iv_care.setImageResource(R.drawable.whocare_icon);
+            default:
+                break;
+        }
 
         //设置监听事件
         if (OnItemClickListener!=null){
