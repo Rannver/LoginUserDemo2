@@ -19,6 +19,7 @@ import com.example.rannver.loginuserdemo.Data.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.CircleImageView;
 import com.example.rannver.loginuserdemo.Util.PopuWindowConfirm;
+import com.squareup.picasso.Picasso;
 
 import org.litepal.crud.DataSupport;
 
@@ -102,6 +103,7 @@ public class PersonInfoActivity extends AppCompatActivity {
             if (file.exists()) {
                 Bitmap bitmap = BitmapFactory.decodeFile(head_image_path);
                 ivInfoHead.setImageBitmap(bitmap);
+                ivInfoHead.setVisibility(View.VISIBLE);
             }
         }
 

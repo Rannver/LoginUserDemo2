@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.example.rannver.loginuserdemo.Data.PersonFriend;
 import com.example.rannver.loginuserdemo.Data.PersonInfomation;
+import com.example.rannver.loginuserdemo.Data.SaveUser;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.PopuWindowTvInfo;
 
@@ -52,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
         //建立数据库
         LitePal.getDatabase();
 
+        //登录时的数据库操作
+        CheckLogin();
+
         //显示来自注册界面跳转的信息
         Intent intent_get = getIntent();
         intent_name = intent_get.getStringExtra("signup_name");
@@ -90,6 +94,9 @@ public class MainActivity extends AppCompatActivity {
                 }else if(User_login_pwd.equals("")){
                     Toast.makeText(MainActivity.this, "用户密码未填写", Toast.LENGTH_SHORT).show();
                 }else if ((login_db_name.equals(User_login_id))&&(login_db_pwd.equals(User_login_pwd))){
+
+                    //更新SaveUser表
+                    SaveUserTable(login_db_name,login_db_pwd,1);
 
                     //跳转
                     Intent intent_1 = new Intent(MainActivity.this,PersonInfoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -135,6 +142,9 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "用户密码未填写", Toast.LENGTH_SHORT).show();
                 }else if ((login_db_name.equals(User_login_id))&&(login_db_pwd.equals(User_login_pwd))){
 
+                    //更新SaveUser表
+                    SaveUserTable(login_db_name,login_db_pwd,2);
+
                     //跳转
                     Intent intent_1 = new Intent(MainActivity.this,PersonInfoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent_1.putExtra("login_flag","2");
@@ -167,6 +177,54 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+    }
+
+    //打开App登录和退出登录时的数据库操作
+    private void CheckLogin() {
+        String intent_signup = "";
+        Intent intent_get = getIntent();
+        intent_signup = intent_get.getStringExtra("login_back");//获取退出登录的用户名
+        if (intent_signup==null){
+            //点击进入登录事件
+            List<SaveUser> users = DataSupport.findAll(SaveUser.class);
+            for (SaveUser user:users){
+                if (user.getStaus()==1){
+                    System.out.println("login:"+user.getFlag()+","+user.getUsername());
+                    Intent intent_login = new Intent(MainActivity.this,PersonInfoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    String flag = String.valueOf(user.getFlag());
+                    String name = user.getUsername();
+                    intent_login.putExtra("login_flag",flag);
+                    intent_login.putExtra("login_name",name);
+                    startActivity(intent_login);
+                    break;
+                }
+            }
+        }else {
+            //退出登录切入的登录界面
+            edLoginId.setText(intent_signup);
+        }
+    }
+
+    //更新SaveUser表的信息
+    private void SaveUserTable(String name,String pwd,int flag){
+
+        List<SaveUser> users = DataSupport.where("username = ?",name).find(SaveUser.class);
+        System.out.println("size():"+users.size());
+        if (users.size()==0){
+            //之前表中没有存入该用户
+            SaveUser user = new SaveUser();
+            user.setUsername(name);
+            user.setPassword(pwd);
+            user.setFlag(flag);
+            user.setStaus(1);
+            user.save();
+        }else {
+            //表中已有该用户，更新状态
+            SaveUser user = new SaveUser();
+            user.setStaus(1);
+            user.updateAll("username = ?",name);
+        }
 
     }
 }

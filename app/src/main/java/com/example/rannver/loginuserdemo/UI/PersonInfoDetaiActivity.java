@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.rannver.loginuserdemo.Data.PersonInfomation;
+import com.example.rannver.loginuserdemo.Data.SaveUser;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.CircleImageView;
 
@@ -104,12 +105,14 @@ public class PersonInfoDetaiActivity extends AppCompatActivity {
         //本地路径方式，如果是后台的Url需要用picasso
         if (head_image_path!=null){
             File file = new File(head_image_path);
+            System.out.println("exists:"+file.exists());
             if (file.exists()){
                 Bitmap bitmap = BitmapFactory.decodeFile(head_image_path);
                 ivDetaiHead.setImageBitmap(bitmap);
+                ivDetaiHead.setVisibility(View.VISIBLE);
             }
         }
-
+//        ivDetaiHead.setImageResource(R.drawable.test);
         //点击返回
         ivDetaiBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,11 +138,23 @@ public class PersonInfoDetaiActivity extends AppCompatActivity {
         btuSigupBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //更新SaveUser表
+                SaveUserTable();
+
                 Intent intent_signup_back = new Intent(PersonInfoDetaiActivity.this,MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent_signup_back.putExtra("login_back",intent_name);
                 startActivity(intent_signup_back);
             }
         });
 
+    }
+
+    //更新SaveUser表
+    private void SaveUserTable() {
+        SaveUser user = new SaveUser();
+        user.setToDefault("staus");
+        user.updateAll("username = ?",intent_name);
     }
 
     private String BirthdayDateToStr(Date date){
