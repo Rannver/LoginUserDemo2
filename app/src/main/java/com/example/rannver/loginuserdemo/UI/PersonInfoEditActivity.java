@@ -326,6 +326,8 @@ public class PersonInfoEditActivity extends AppCompatActivity {
                 //游标移到第一位，即从第一位开始读取
                 cursor.moveToFirst();
                 String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                Uri uri = Uri.fromFile(new File(path));
+                image_head_uri = uri;
                 cursor.close();
                 //调用系统裁剪
                 startPhoneZoom(Uri.fromFile(new File(path)));

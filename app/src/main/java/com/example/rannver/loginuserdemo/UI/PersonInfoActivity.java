@@ -3,10 +3,13 @@ package com.example.rannver.loginuserdemo.UI;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -101,9 +104,11 @@ public class PersonInfoActivity extends AppCompatActivity {
         if (head_image_path != null) {
             File file = new File(head_image_path);
             if (file.exists()) {
+                Toast.makeText(PersonInfoActivity.this,"1",Toast.LENGTH_SHORT).show();
                 Bitmap bitmap = BitmapFactory.decodeFile(head_image_path);
                 ivInfoHead.setImageBitmap(bitmap);
-                ivInfoHead.setVisibility(View.VISIBLE);
+            }else {
+                Toast.makeText(PersonInfoActivity.this,"2"+file.exists(),Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -236,6 +241,6 @@ public class PersonInfoActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        
+
     }
 }

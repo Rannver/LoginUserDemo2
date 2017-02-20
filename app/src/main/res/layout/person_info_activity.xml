@@ -131,7 +131,6 @@
         <ImageView
             android:layout_width="22dp"
             android:layout_height="22dp"
-            android:src="@drawable/group_icon"
             app:srcCompat="@android:drawable/ic_input_add" />
 
         <TextView
