@@ -1,6 +1,5 @@
-package com.example.rannver.loginuserdemo.Data;
+package com.example.rannver.loginuserdemo.Data.dbTable;
 
-import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
@@ -15,6 +14,7 @@ import java.util.List;
 public class PersonInfomation extends DataSupport{
 
     private int id;  //用户id
+    private int user_id;
     private int age; //用户年龄
     private int care; //特别关心谁
     private int becare;  //被谁特别关心
@@ -35,6 +35,14 @@ public class PersonInfomation extends DataSupport{
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
     }
 
     public int getAge() {

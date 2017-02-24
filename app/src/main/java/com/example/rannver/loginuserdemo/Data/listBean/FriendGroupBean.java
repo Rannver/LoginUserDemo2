@@ -1,4 +1,4 @@
-package com.example.rannver.loginuserdemo.Data;
+package com.example.rannver.loginuserdemo.Data.listBean;
 
 /**
  * Created by Rannver on 2017/2/8.

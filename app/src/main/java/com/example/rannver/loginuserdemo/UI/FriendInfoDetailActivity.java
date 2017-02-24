@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -12,11 +13,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.rannver.loginuserdemo.Data.PersonFriend;
-import com.example.rannver.loginuserdemo.Data.PersonInfomation;
+import com.example.rannver.loginuserdemo.Data.dbTable.PersonFriend;
+import com.example.rannver.loginuserdemo.Data.dbTable.PersonInfomation;
+import com.example.rannver.loginuserdemo.Data.gsonBean.PersonInfoGsonBean;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.CircleImageView;
 import com.example.rannver.loginuserdemo.Util.PopuWindowConfirm;
+import com.example.rannver.loginuserdemo.WebApi.ShowFriendInfoApi;
+import com.example.rannver.loginuserdemo.WebService.ShowFriendInfoService;
+import com.squareup.picasso.Picasso;
 
 import org.litepal.crud.DataSupport;
 
@@ -27,6 +32,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Rannver on 2017/2/13.
@@ -61,6 +69,8 @@ public class FriendInfoDetailActivity extends AppCompatActivity {
     RelativeLayout RelativeFriend8;
     @BindView(R.id.Relative_friend_9)
     RelativeLayout RelativeFriend9;
+    @BindView(R.id.btu_friend_chat)
+    Button btuFriendChat;               //跳转至用户交流功能的Button
 
     private String intent_flag = null;
     private String intent_name = null;
@@ -76,7 +86,7 @@ public class FriendInfoDetailActivity extends AppCompatActivity {
         intent_flag = intent_get.getStringExtra("login_flag");
         intent_name = intent_get.getStringExtra("login_name");
         intent_friend_id = intent_get.getStringExtra("friend_id");
-        Toast.makeText(FriendInfoDetailActivity.this,intent_flag+","+intent_name+","+intent_friend_id,Toast.LENGTH_SHORT).show();
+        Toast.makeText(FriendInfoDetailActivity.this, intent_flag + "," + intent_name + "," + intent_friend_id, Toast.LENGTH_SHORT).show();
 
         //好友详细信息显示
         ShowFriendInfo();
@@ -85,9 +95,9 @@ public class FriendInfoDetailActivity extends AppCompatActivity {
         ivDetaiBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent_back = new Intent(FriendInfoDetailActivity.this,PersonInfoActivity.class);
-                intent_back.putExtra("login_flag",intent_flag);
-                intent_back.putExtra("login_name",intent_name);
+                Intent intent_back = new Intent(FriendInfoDetailActivity.this, PersonInfoActivity.class);
+                intent_back.putExtra("login_flag", intent_flag);
+                intent_back.putExtra("login_name", intent_name);
                 startActivity(intent_back);
             }
         });
@@ -95,22 +105,22 @@ public class FriendInfoDetailActivity extends AppCompatActivity {
         RelativeFriend8.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent_set = new Intent(FriendInfoDetailActivity.this,FriendSettingActivity.class);
-                intent_set.putExtra("login_flag",intent_flag);
-                intent_set.putExtra("login_name",intent_name);
-                intent_set.putExtra("friend_id",intent_friend_id);
-                intent_set.putExtra("friend_flag","change");
+                Intent intent_set = new Intent(FriendInfoDetailActivity.this, FriendSettingActivity.class);
+                intent_set.putExtra("login_flag", intent_flag);
+                intent_set.putExtra("login_name", intent_name);
+                intent_set.putExtra("friend_id", intent_friend_id);
+                intent_set.putExtra("friend_flag", "change");
                 startActivity(intent_set);
             }
         });
         RelativeFriend9.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent_set = new Intent(FriendInfoDetailActivity.this,FriendSettingActivity.class);
-                intent_set.putExtra("login_flag",intent_flag);
-                intent_set.putExtra("login_name",intent_name);
-                intent_set.putExtra("friend_id",intent_friend_id);
-                intent_set.putExtra("friend_flag","change");
+                Intent intent_set = new Intent(FriendInfoDetailActivity.this, FriendSettingActivity.class);
+                intent_set.putExtra("login_flag", intent_flag);
+                intent_set.putExtra("login_name", intent_name);
+                intent_set.putExtra("friend_id", intent_friend_id);
+                intent_set.putExtra("friend_flag", "change");
                 startActivity(intent_set);
             }
         });
@@ -118,76 +128,84 @@ public class FriendInfoDetailActivity extends AppCompatActivity {
         btuFriendDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PopuWindowConfirm pop = new PopuWindowConfirm(FriendInfoDetailActivity.this,FriendInfoDetailActivity.this,intent_name,intent_flag);
-                pop.DeleteFriendPopu(tvInfoFirendName.getText().toString(),tvInfoFriendRemark.getText().toString(),intent_friend_id,intent_name);
+                PopuWindowConfirm pop = new PopuWindowConfirm(FriendInfoDetailActivity.this, FriendInfoDetailActivity.this, intent_name, intent_flag);
+                pop.DeleteFriendPopu(tvInfoFirendName.getText().toString(), tvInfoFriendRemark.getText().toString(), intent_friend_id, intent_name);
+            }
+        });
+        //点击跳转至用户交流功能事件
+        btuFriendChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //用户交流功能
             }
         });
     }
 
     private void ShowFriendInfo() {
-        String path = "";
-        String username = "";
-        String sex = "";
-        String birthday = "";
-        String address = "";
-        String job = "";
-        String phone = "";
-        String remark = "";
-        String relation = "";
 
         //显示好友用户的基本信息
-        List<PersonInfomation> friendinfos = DataSupport.where("id = ?",intent_friend_id).find(PersonInfomation.class);
-        for (PersonInfomation info:friendinfos){
-            path = info.getPortrait_url();
-            username = info.getUsername();
-            sex = info.getCareer();
-            birthday = BirthdayDateToStr(info.getBirthday());
-            address = info.getAddress();
-            job = info.getCareer();
-            phone = String.valueOf(info.getPhone_number());
-        }
+        ShowFriendInfoApi showFriendInfoApi = new ShowFriendInfoApi();
+        ShowFriendInfoService showFriendInfoService = showFriendInfoApi.getService();
+        Call<PersonInfoGsonBean> call_FriendInfo = showFriendInfoService.getFriendInfo(Integer.parseInt(intent_friend_id));
+        call_FriendInfo.enqueue(new Callback<PersonInfoGsonBean>() {
+            @Override
+            public void onResponse(Call<PersonInfoGsonBean> call, Response<PersonInfoGsonBean> response) {
+                if (response.body()!=null){
+                     String path = response.body().getPortrait_url();
+                    String username = response.body().getUsername();
+                    String sex = response.body().getGender();
+                    String birthday = "";
+                    String address = response.body().getAddress();
+                    String job = response.body().getCareer();
+                    String phone = String.valueOf(response.body().getPhone_number());
+                    tvInfoFirendName.setText(username);
+                    tvInfoFirendSex.setText(sex);
+                    tvInfoFirendYear.setText(birthday);
+                    tvInfoFirendAddress.setText(address);
+                    tvInfoFirendJob.setText(job);
+                    tvInfoFirendPhone.setText(phone);
+                    if (path != null) {
+                        Picasso.with(FriendInfoDetailActivity.this).load(path).into(ivDetaiHead);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PersonInfoGsonBean> call, Throwable t) {
+                Log.d("FriendInfo_detail","好友"+intent_friend_id+"的基本信息显示失败");
+            }
+        });
 
         //显示用户的好友信息
         List<PersonFriend> friend_list = null;
-        List<PersonInfomation> userinfos = DataSupport.where("username = ?",intent_name).find(PersonInfomation.class);
-        for (PersonInfomation user_info:userinfos){
+        String remark = "";
+        String relation = "";
+        List<PersonInfomation> userinfos = DataSupport.where("username = ?", intent_name).find(PersonInfomation.class);
+        for (PersonInfomation user_info : userinfos) {
             friend_list = user_info.getFriend_list();
         }
-        for (PersonFriend personfriend:friend_list){
+        for (PersonFriend personfriend : friend_list) {
             String id = String.valueOf(personfriend.getFriend_id());
-            if (intent_friend_id.equals(id)){
+            if (intent_friend_id.equals(id)) {
                 remark = personfriend.getFriend_remark();
                 relation = personfriend.getFriend_relationship();
                 break;
             }
         }
         tvInfoFirendId.setText(intent_friend_id);
-        tvInfoFirendName.setText(username);
-        tvInfoFirendSex.setText(sex);
-        tvInfoFirendYear.setText(birthday);
-        tvInfoFirendAddress.setText(address);
-        tvInfoFirendJob.setText(job);
-        tvInfoFirendPhone.setText(phone);
         tvInfoFriendRelation.setText(relation);
         tvInfoFriendRemark.setText(remark);
-        if (path != null) {
-            File file = new File(path);
-            if (file.exists()) {
-                Bitmap bitmap = BitmapFactory.decodeFile(path);
-                ivDetaiHead.setImageBitmap(bitmap);
-            }
-        }
 
     }
 
-    private String BirthdayDateToStr(Date date){
+    private String BirthdayDateToStr(Date date) {
         String string;
 
-        if (date!=null){
+        if (date != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             string = sdf.format(date);
-            System.out.println("detail_birthday:"+string);
-        }else {
+            System.out.println("detail_birthday:" + string);
+        } else {
             string = "#/A";
         }
         return string;

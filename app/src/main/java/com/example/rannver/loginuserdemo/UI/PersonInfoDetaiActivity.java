@@ -11,10 +11,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.rannver.loginuserdemo.Data.PersonInfomation;
-import com.example.rannver.loginuserdemo.Data.SaveUser;
+import com.example.rannver.loginuserdemo.Data.dbTable.PersonInfomation;
+import com.example.rannver.loginuserdemo.Data.dbTable.SaveUser;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.CircleImageView;
+import com.squareup.picasso.Picasso;
 
 import org.litepal.crud.DataSupport;
 
@@ -83,7 +84,7 @@ public class PersonInfoDetaiActivity extends AppCompatActivity {
         String head_image_path = "";
 
         for (PersonInfomation personInfomation:info_list){
-            id = String.valueOf(personInfomation.getId());
+            id = String.valueOf(personInfomation.getUser_id());
             name = personInfomation.getUsername();
             sex = personInfomation.getGender();
             birthday = personInfomation.getBirthday();
@@ -103,16 +104,9 @@ public class PersonInfoDetaiActivity extends AppCompatActivity {
         tvInfoDetaiPhone.setText(phone);
         //设置图片信息
         //本地路径方式，如果是后台的Url需要用picasso
-        if (head_image_path!=null){
-            File file = new File(head_image_path);
-            System.out.println("exists:"+file.exists());
-            if (file.exists()){
-                Bitmap bitmap = BitmapFactory.decodeFile(head_image_path);
-                ivDetaiHead.setImageBitmap(bitmap);
-                ivDetaiHead.setVisibility(View.VISIBLE);
-            }
+        if (head_image_path != null) {
+            Picasso.with(PersonInfoDetaiActivity.this).load(head_image_path).into(ivDetaiHead);
         }
-//        ivDetaiHead.setImageResource(R.drawable.test);
         //点击返回
         ivDetaiBack.setOnClickListener(new View.OnClickListener() {
             @Override

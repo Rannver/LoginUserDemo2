@@ -70,7 +70,7 @@
                 android:id="@+id/ed_choose_input"
                 android:background="@null"
                 android:paddingLeft="10dp"
-                android:hint="搜索账号id或用户名"
+                android:hint="搜索用户名"
                 />
         </LinearLayout>
         <View

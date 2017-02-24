@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -13,27 +15,35 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
-import android.widget.RelativeLayout;
+import android.widget.Toast;
 
-import com.example.rannver.loginuserdemo.Data.PersonFriend;
-import com.example.rannver.loginuserdemo.Data.PersonInfomation;
+import com.example.rannver.loginuserdemo.Data.dbTable.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.CircleImageView;
 import com.example.rannver.loginuserdemo.Util.DateCheckUtil;
 import com.example.rannver.loginuserdemo.Util.PopuWindowHeadImageUtil;
 import com.example.rannver.loginuserdemo.Util.PopuWindowTvInfo;
+import com.example.rannver.loginuserdemo.WebApi.SignInApi;
+import com.example.rannver.loginuserdemo.WebApi.VerifyApi;
+import com.example.rannver.loginuserdemo.WebService.SignInService;
+import com.example.rannver.loginuserdemo.WebService.VerifyService;
 
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Rannver on 2017/1/17.
@@ -142,10 +152,6 @@ public class SignUpActivity extends AppCompatActivity {
                     System.out.println("CheckBirthday()" + CheckBirthday(year,month,day));
                     PopuWindowTvInfo popuWindowTvInfo = new PopuWindowTvInfo(SignUpActivity.this);
                     popuWindowTvInfo.ChangepopuInfo("出生日期填写格式不正确，请检查后注册");
-                } else if (!CheckUserName(user_name)){
-                    System.out.println("CheckUserName():"+CheckUserName(user_name));
-                    PopuWindowTvInfo popuWindowTvInfo = new PopuWindowTvInfo(SignUpActivity.this);
-                    popuWindowTvInfo.ChangepopuInfo("该用户名已注册，请重新设置后注册");
                 } else{
                     user_sex = GetSex();
                     String path = "";
@@ -154,43 +160,43 @@ public class SignUpActivity extends AppCompatActivity {
                     }else {
                         path ="";
                     }
-
                     System.out.println("用户名："+user_name+"\n"
-                                       +"用户密码："+user_pwd1+"\n"
-                                       +"用户性别："+user_sex+"\n"
-                                       +"用户生日:"+SetbirthdayDate(year,month,day)+"\n"
-                                       +"用户住址："+user_adress+"\n"
-                                       +"用户职业:"+user_job+"\n"
-                                       +"用户电话："+user_phone+"\n"
-                                       +"头像路径："+path+"\n");
-
-                    //上传至远程服务器、本地存储用户信息
-                    //存入本地数据库
-                    PersonInfomation personInfomation = new PersonInfomation();
-                    personInfomation.setUsername(user_name);
-                    personInfomation.setPassword(user_pwd1);
-                    personInfomation.setGender(user_sex);
-                    personInfomation.setBirthday(SetbirthdayDate(year,month,day));
-                    System.out.println("signup_birthday:"+personInfomation.getBirthday());
-                    personInfomation.setAddress(user_adress);
-                    personInfomation.setCareer(user_job);
-                    personInfomation.setPhone_number(Long.parseLong(user_phone));
-                    personInfomation.setPortrait_url(path);
-                    personInfomation.save();
-
-
-                    //跳转至Login界面
-                    Intent intent = new Intent(SignUpActivity.this,MainActivity.class);
-                    intent.putExtra("signup_flag","signup");
-                    intent.putExtra("signup_name",user_name);
-                    intent.putExtra("signup_pwd",user_pwd1);
-                    startActivity(intent);
+                            +"用户密码："+user_pwd1+"\n"
+                            +"用户性别："+user_sex+"\n"
+                            +"用户生日:"+SetbirthdayDate(year,month,day)+"\n"
+                            +"用户住址："+user_adress+"\n"
+                            +"用户职业:"+user_job+"\n"
+                            +"用户电话："+user_phone+"\n"
+                            +"头像路径："+path+"\n");
+                    CheckUserName(user_name,user_pwd1,user_sex,SetbirthdayDate(year,month,day),user_adress,user_job,user_phone,path);
                 }
-
-
             }
         });
 
+    }
+
+    //注册用户数据传往远程数据库
+    private void UpLoadUserData(final String user_name, final String user_pwd1, String user_sex, Date date, String user_adress, String user_job, String user_phone, String path) {
+
+        File file = new File(path);
+        final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"),file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("portrait",file.getName(),requestFile);
+        SignInApi signApi = new SignInApi();
+        SignInService signService = signApi.getService();
+        Call<String> call_sign = signService.getState(user_name,user_pwd1,user_sex,date.getTime(),user_adress,user_job, Long.parseLong(user_phone),body);
+        call_sign.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                System.out.println("response.body():"+response.body());
+                //存在返回值为null的bug
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(SignUpActivity.this,"注册失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                System.out.println("call_sign_onFailure"+t);
+            }
+        });
     }
 
 
@@ -282,25 +288,35 @@ public class SignUpActivity extends AppCompatActivity {
 
     //检测用户名是否重复
     //重复为flase不重复为true
-    private boolean CheckUserName(String name){
-        List<PersonInfomation> login_db_list = DataSupport.where("username = ?",name).find(PersonInfomation.class);
-        String check_name = "";
-        for (PersonInfomation personInfomation:login_db_list){
-            check_name = personInfomation.getUsername();
-            System.out.println("check_name:"+check_name);
-        }
-        if (check_name.equals("")){
-            return true;
-        }else {
-            return false;
-        }
+    private void CheckUserName(final String name, final String pwd, final String sex, final Date date, final String address, final String job, final String phone, final String path){
+        VerifyApi verifyApi = new VerifyApi();
+        VerifyService verifyService = verifyApi.getService();
+        Call<String> call_verify = verifyService.getState(name);
+        call_verify.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                String str = response.body();
+                System.out.println("CheckVerify():"+str);
+                if (str.equals("false")){
+                    //该用户尚未注册，允许注册
+                    UpLoadUserData(name,pwd,sex,date,address,job,phone,path);
+                }else {
+                    PopuWindowTvInfo popuWindowTvInfo = new PopuWindowTvInfo(SignUpActivity.this);
+                    popuWindowTvInfo.ChangepopuInfo("该用户名已注册，请重新设置后注册");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(SignUpActivity.this,"连接失败,请检查网络连接设置",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        System.out.println("requestCode:" + requestCode);
         if (requestCode == 1) {
             //相机设置的情况下
             startPhoneZoom(image_head_uri);

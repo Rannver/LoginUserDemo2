@@ -32,12 +32,17 @@ public class DateCheckUtil {
         }
     }
 
-    //年龄计算
-    public String GetAge(String birthday){
-        String age = null;
 
+    //Date转换成Str
+    private String BirthdayDateToStr(Date date){
+        String string = "";
 
-        return age;
+        if (date!=null){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            string = sdf.format(date);
+            System.out.println("detail_birthday:"+string);
+        }
+        return string;
     }
 
     private int ReturnDay(int y, int m, int d) {
@@ -62,4 +67,9 @@ public class DateCheckUtil {
         }
     }
 
+    //将日期转换成毫秒数
+    public long DateToMillionSeconds(Date date){
+        long ms = date.getTime();
+        return ms;
+    }
 }

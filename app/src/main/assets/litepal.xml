@@ -2,11 +2,11 @@
 <litepal>
     <dbname value="PersonData" ></dbname>
 
-    <version value="10" ></version>
+    <version value="11" ></version>
 
     <list>
-        <mapping class="com.example.rannver.loginuserdemo.Data.PersonInfomation"></mapping>
-        <mapping class="com.example.rannver.loginuserdemo.Data.PersonFriend"></mapping>
-        <mapping class="com.example.rannver.loginuserdemo.Data.SaveUser"></mapping>
+        <mapping class="com.example.rannver.loginuserdemo.Data.dbTable.PersonInfomation"></mapping>
+        <mapping class="com.example.rannver.loginuserdemo.Data.dbTable.PersonFriend"></mapping>
+        <mapping class="com.example.rannver.loginuserdemo.Data.dbTable.SaveUser"></mapping>
     </list>
 </litepal>

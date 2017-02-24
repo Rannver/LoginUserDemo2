@@ -3,8 +3,6 @@ package com.example.rannver.loginuserdemo.UI;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,12 +14,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.rannver.loginuserdemo.Adpter.FriendGroupAdpter;
-import com.example.rannver.loginuserdemo.Data.FriendGroupBean;
-import com.example.rannver.loginuserdemo.Data.PersonFriend;
-import com.example.rannver.loginuserdemo.Data.PersonInfomation;
+import com.example.rannver.loginuserdemo.Data.gsonBean.PersonInfoGsonBean;
+import com.example.rannver.loginuserdemo.Data.listBean.FriendGroupBean;
+import com.example.rannver.loginuserdemo.Data.dbTable.PersonFriend;
+import com.example.rannver.loginuserdemo.Data.dbTable.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.CircleImageView;
 import com.example.rannver.loginuserdemo.Util.PopuWindowConfirm;
+import com.example.rannver.loginuserdemo.WebApi.ShowFriendInfoApi;
+import com.example.rannver.loginuserdemo.WebService.ShowFriendInfoService;
 import com.squareup.picasso.Picasso;
 
 import org.litepal.crud.DataSupport;
@@ -33,6 +34,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Rannver on 2017/1/26.
@@ -70,9 +74,9 @@ public class PersonInfoActivity extends AppCompatActivity {
         intent_flag = intent_login_flag.getStringExtra("login_flag");
         intent_name = intent_login_flag.getStringExtra("login_name");
 
-        Toast.makeText(PersonInfoActivity.this, intent_flag + "，" + intent_name, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(PersonInfoActivity.this, intent_flag + "，" + intent_name, Toast.LENGTH_SHORT).show();
 
-        //个人信息页面显示
+        //获取个人信息并显示
         final List<PersonInfomation> info_list = DataSupport.where("username = ?", intent_name).find(PersonInfomation.class);
         String name = "";
         String sex = "";
@@ -87,11 +91,10 @@ public class PersonInfoActivity extends AppCompatActivity {
             sex = personInfomation.getGender();
             job = personInfomation.getCareer();
             head_image_path = personInfomation.getPortrait_url();
-            id = personInfomation.getId();
+            id = personInfomation.getUser_id();
             care_id = personInfomation.getCare();
             becare_id = personInfomation.getBecare();
             list_friend = personInfomation.getFriend_list();
-
             Date birthday = personInfomation.getBirthday();
             System.out.println("info_birthday:"+birthday);
         }
@@ -102,14 +105,7 @@ public class PersonInfoActivity extends AppCompatActivity {
         infoUserjob.setText(job);
         //设置图片信息
         if (head_image_path != null) {
-            File file = new File(head_image_path);
-            if (file.exists()) {
-                Toast.makeText(PersonInfoActivity.this,"1",Toast.LENGTH_SHORT).show();
-                Bitmap bitmap = BitmapFactory.decodeFile(head_image_path);
-                ivInfoHead.setImageBitmap(bitmap);
-            }else {
-                Toast.makeText(PersonInfoActivity.this,"2"+file.exists(),Toast.LENGTH_SHORT).show();
-            }
+            Picasso.with(PersonInfoActivity.this).load(head_image_path).into(ivInfoHead);
         }
 
 
@@ -119,7 +115,7 @@ public class PersonInfoActivity extends AppCompatActivity {
                 final List<FriendGroupBean> friendlist = LoadFriendData(list_friend,care_id,becare_id);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
                 listFriend.setLayoutManager(linearLayoutManager);
-                FriendGroupAdpter friendGroupAdpter = new FriendGroupAdpter(friendlist, intent_flag);
+                FriendGroupAdpter friendGroupAdpter = new FriendGroupAdpter(friendlist, intent_flag,PersonInfoActivity.this);
                 friendGroupAdpter.SetOnItemClickListener(new FriendGroupAdpter.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
@@ -184,63 +180,61 @@ public class PersonInfoActivity extends AppCompatActivity {
 
     }
 
-    private List<FriendGroupBean> LoadFriendData(List<PersonFriend> list_friend,int care_id,int becare_id) {
-        List<FriendGroupBean> list = new ArrayList<FriendGroupBean>();
+    private List<FriendGroupBean> LoadFriendData(List<PersonFriend> list_friend, final int care_id, final int becare_id) {
 
-        //数据库读取好友信息
-
+        final List<FriendGroupBean> list = new ArrayList<FriendGroupBean>();
+        //后台数据库读取好友信息
         if (list_friend!=null){
             for (PersonFriend personfriend:list_friend){
-                FriendGroupBean friend = new FriendGroupBean();
 
-                int id = personfriend.getFriend_id();
-                String remark = personfriend.getFriend_remark();
+                final FriendGroupBean friend = new FriendGroupBean();
+                final int id = personfriend.getFriend_id();
+                final String remark = personfriend.getFriend_remark();
                 String relation = personfriend.getFriend_relationship();
-                String head_image_url = "";
-                String user_name = "";
-                String job = "";
-                int age = 0;
-                int friend_id = 0;
-                String sex = "";
-                String flag = "";
 
-                List<PersonInfomation> information = DataSupport.where("id = ?", String.valueOf(id)).find(PersonInfomation.class);
-                for (PersonInfomation person:information){
-                    head_image_url = person.getPortrait_url();
-                    user_name = person.getUsername();
-                    job = person.getCareer();
-                    age = person.getAge();
-                    sex = person.getGender();
-                    friend_id = person.getId();
-                }
+                ShowFriendInfoApi showFriendInfoApi = new ShowFriendInfoApi();
+                ShowFriendInfoService showFriendInfoService = showFriendInfoApi.getService();
+                Call<PersonInfoGsonBean> call_friendInfo = showFriendInfoService.getFriendInfo(id);
+                call_friendInfo.enqueue(new Callback<PersonInfoGsonBean>() {
+                    @Override
+                    public void onResponse(Call<PersonInfoGsonBean> call, Response<PersonInfoGsonBean> response) {
+                        if (response.body()!=null){
+                            String head_image_url = response.body().getPortrait_url();
+                            String user_name = response.body().getUsername();
+                            String job = response.body().getCareer();
+                            int age = response.body().getAge();
+                            int friend_id = response.body().getId();
+                            String sex = response.body().getGender();
+                            String flag = "";
+                            friend.setFriend_id(String.valueOf(id));
+                            friend.setFriend_remark(remark);
+                            friend.setHead_image_path(head_image_url);
+                            friend.setFriend_name(user_name);
+                            friend.setFriend_job(job);
+                            friend.setFriend_age(String.valueOf(age));
+                            friend.setFriend_sex(sex);
+                            if (friend_id==care_id){
+                                flag = "2";
+                            }else if (friend_id==becare_id){
+                                flag = "3";
+                            }else if (care_id==becare_id&&care_id!=0&&becare_id!=0){
+                                flag = "4";
+                            }else {
+                                flag = "1";
+                            }
+                            friend.setFriend_flag(flag);
+                            list.add(friend);
+                        }
+                    }
 
-                friend.setFriend_id(String.valueOf(id));
-                friend.setFriend_remark(remark);
-                friend.setHead_image_path(head_image_url);
-                friend.setFriend_name(user_name);
-                friend.setFriend_job(job);
-                friend.setFriend_age(String.valueOf(age));
-                friend.setFriend_sex(sex);
-                if (friend_id==care_id){
-                    flag = "2";
-                }else if (friend_id==becare_id){
-                    flag = "3";
-                }else if (care_id==becare_id&&care_id!=0&&becare_id!=0){
-                    flag = "4";
-                }else {
-                    flag = "1";
-                }
-                friend.setFriend_flag(flag);
-                list.add(friend);
+                    @Override
+                    public void onFailure(Call<PersonInfoGsonBean> call, Throwable t) {
+                        Log.d("friendInfo_onFailure","获取好友"+id+"的基本信息失败");
+                    }
+                });
             }
         }
 
         return list;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
     }
 }

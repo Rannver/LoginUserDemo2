@@ -16,15 +16,20 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.rannver.loginuserdemo.BuildConfig;
-import com.example.rannver.loginuserdemo.Data.PersonFriend;
-import com.example.rannver.loginuserdemo.Data.PersonInfomation;
+import com.example.rannver.loginuserdemo.Data.dbTable.PersonFriend;
+import com.example.rannver.loginuserdemo.Data.dbTable.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.UI.PersonInfoActivity;
+import com.example.rannver.loginuserdemo.WebApi.DeleteFriendApi;
+import com.example.rannver.loginuserdemo.WebService.DeleteFriendService;
 
 import org.litepal.crud.DataSupport;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Rannver on 2017/2/15.
@@ -337,18 +342,41 @@ public class PopuWindowConfirm extends PopupWindow {
 
 
     //删除好友操作
-    private void DeleteFriend(String name,String friend_id) {
+    private void DeleteFriend(final String name, final String friend_id) {
         List<PersonInfomation> infos = DataSupport.where("username = ?",name).find(PersonInfomation.class);
         int user_id = 0;
-        String care_id = "";
-        String becare_id = "";
         for (PersonInfomation person:infos){
-            user_id = person.getId();
-            care_id = String.valueOf(person.getCare());
-            becare_id = String.valueOf(person.getBecare());
+            user_id = person.getUser_id();
         }
-        DataSupport.deleteAll(PersonFriend.class,"personinfomation_id = ? and friend_id = ?", String.valueOf(user_id),friend_id);
+        DeleteFriendApi deleteApi = new DeleteFriendApi();
+        DeleteFriendService deleteService = deleteApi.getService();
+        Call<String> call_delete = deleteService.getState(String.valueOf(user_id),friend_id);
+        call_delete.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                List<PersonInfomation> infos = DataSupport.where("username = ?",name).find(PersonInfomation.class);
+                int key_id = 0;
+                String care_id = "";
+                String becare_id = "";
+                for (PersonInfomation person:infos){
+                    key_id = person.getId();
+                    care_id = String.valueOf(person.getCare());
+                    becare_id = String.valueOf(person.getBecare());
+                }
+                //删除好友成功，本地数据库删除好友关系
+                LocalDelete(name,key_id,friend_id,care_id,becare_id);
+            }
 
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(PActivity,"删除好友失败,请检查网络设置",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    //本地数据库删除好友
+    private void LocalDelete(String name,int key_id, String friend_id, String care_id, String becare_id) {
+        DataSupport.deleteAll(PersonFriend.class,"personinfomation_id = ? and friend_id = ?", String.valueOf(key_id),friend_id);
         if (care_id.equals(friend_id)){
 
             //解除关系，用户表删除特别关心

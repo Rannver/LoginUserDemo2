@@ -1,5 +1,6 @@
 package com.example.rannver.loginuserdemo.Adpter;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
@@ -9,10 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.rannver.loginuserdemo.Data.FriendGroupBean;
+import com.example.rannver.loginuserdemo.Data.listBean.FriendGroupBean;
 import com.example.rannver.loginuserdemo.R;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.List;
@@ -26,10 +27,12 @@ public class FriendGroupAdpter extends RecyclerView.Adapter<FriendGroupAdpter.Vi
 
     private List<FriendGroupBean> friend_list;
     private String friend_flag;
+    private Activity FActivity;
 
-    public FriendGroupAdpter(List<FriendGroupBean> list, String flag){
+    public FriendGroupAdpter(List<FriendGroupBean> list, String flag, Activity activity){
         friend_list = list;
         friend_flag = flag;
+        FActivity = activity;
         Log.d("Adpter_flag",flag);
     }
 
@@ -122,11 +125,7 @@ public class FriendGroupAdpter extends RecyclerView.Adapter<FriendGroupAdpter.Vi
     private void SetImageBitmap(FriendGroupAdpter.ViewHolder holder,String path){
 
         if (path != null) {
-            File file = new File(path);
-            if (file.exists()) {
-                Bitmap bitmap = BitmapFactory.decodeFile(path);
-                holder.iv_head.setImageBitmap(bitmap);
-            }
+            Picasso.with(FActivity).load(path).into(holder.iv_head);
         }
     }
 

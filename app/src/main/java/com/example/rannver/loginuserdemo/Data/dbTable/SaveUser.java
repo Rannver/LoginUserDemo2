@@ -1,4 +1,4 @@
-package com.example.rannver.loginuserdemo.Data;
+package com.example.rannver.loginuserdemo.Data.dbTable;
 
 import org.litepal.crud.DataSupport;
 

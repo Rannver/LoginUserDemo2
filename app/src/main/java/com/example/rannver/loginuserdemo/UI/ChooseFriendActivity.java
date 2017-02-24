@@ -10,21 +10,28 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.rannver.loginuserdemo.Adpter.ChooseListAdpter;
-import com.example.rannver.loginuserdemo.Data.ChooseGroupBean;
-import com.example.rannver.loginuserdemo.Data.FriendGroupBean;
-import com.example.rannver.loginuserdemo.Data.PersonInfomation;
+import com.example.rannver.loginuserdemo.Data.dbTable.PersonFriend;
+import com.example.rannver.loginuserdemo.Data.gsonBean.PersonInfoGsonBean;
+import com.example.rannver.loginuserdemo.Data.listBean.ChooseGroupBean;
+import com.example.rannver.loginuserdemo.Data.dbTable.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
+import com.example.rannver.loginuserdemo.Util.DateCheckUtil;
+import com.example.rannver.loginuserdemo.WebApi.SearchUserApi;
+import com.example.rannver.loginuserdemo.WebService.SearchUserService;
 
 import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Rannver on 2017/2/9.
@@ -68,38 +75,44 @@ public class ChooseFriendActivity extends AppCompatActivity {
         btuChooseComfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String checkstr = edChooseInput.getText().toString();
-                List<PersonInfomation> list_id = DataSupport. where("id = ?",checkstr).find(PersonInfomation.class);
-                List<PersonInfomation> list_name = DataSupport.where("username = ?",checkstr).find(PersonInfomation.class);
-                List<ChooseGroupBean> list_search = new ArrayList<ChooseGroupBean>();
-                Log.d("size",list_id.size()+","+list_name.size());
-                if (list_id.size()>0){
-                    for (PersonInfomation personInfomation:list_id){
-                       ChooseGroupBean GroupBean = new ChooseGroupBean();
-                        GroupBean.setFriend_id(String.valueOf(personInfomation.getId()));
-                        GroupBean.setFriend_name(personInfomation.getUsername());
-                        GroupBean.setFriend_sex(personInfomation.getGender());
-                        GroupBean.setFriend_age(String.valueOf(personInfomation.getAge()));//之后记得换成年龄计算
-                        System.out.println("information:"+personInfomation.getId()+","+personInfomation.getUsername()+","+personInfomation.getGender()+","+personInfomation.getAge());
-                        list_search.add(GroupBean);
+                final String checkstr = edChooseInput.getText().toString();
+                SearchUserApi searchUserApi = new SearchUserApi();
+                SearchUserService searchUserService = searchUserApi.getService();
+                Call<PersonInfoGsonBean> call_choose = searchUserService.getList(checkstr);
+                call_choose.enqueue(new Callback<PersonInfoGsonBean>() {
+                    @Override
+                    public void onResponse(Call<PersonInfoGsonBean> call, Response<PersonInfoGsonBean> response) {
+                        if (response.body()==null){
+                            Toast.makeText(ChooseFriendActivity.this,"未搜索到符合条件的用户",Toast.LENGTH_SHORT).show();
+                            List<ChooseGroupBean> list_search = new ArrayList<ChooseGroupBean>();
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ChooseFriendActivity.this);
+                            chooseList.setLayoutManager(linearLayoutManager);
+                            ChooseListAdpter chooseListAdpter = new ChooseListAdpter(list_search,ChooseFriendActivity.this,intent_flag,intent_name);
+                            chooseList.setAdapter(chooseListAdpter);
+
+                        }else {
+                            PersonInfoGsonBean personInfoGsonBean = response.body();
+                            List<ChooseGroupBean> list_search = new ArrayList<ChooseGroupBean>();
+                            ChooseGroupBean chooseGroupBean = new ChooseGroupBean();
+                            chooseGroupBean.setFriend_id(String.valueOf(personInfoGsonBean.getId()));
+                            chooseGroupBean.setFriend_age(String.valueOf(personInfoGsonBean.getAge()));
+                            chooseGroupBean.setFriend_name(personInfoGsonBean.getUsername());
+                            chooseGroupBean.setFriend_sex(personInfoGsonBean.getGender());
+                            chooseGroupBean.setHead_image_path(personInfoGsonBean.getPortrait_url());
+                            list_search.add(chooseGroupBean);
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ChooseFriendActivity.this);
+                            chooseList.setLayoutManager(linearLayoutManager);
+                            ChooseListAdpter chooseListAdpter = new ChooseListAdpter(list_search,ChooseFriendActivity.this,intent_flag,intent_name);
+                            chooseList.setAdapter(chooseListAdpter);
+                        }
                     }
-                }
-                if (list_name.size()>0){
-                    for (PersonInfomation personInfomation:list_name){
-                        ChooseGroupBean GroupBean = new ChooseGroupBean();
-                        GroupBean.setFriend_id(String.valueOf(personInfomation.getId()));
-                        GroupBean.setFriend_name(personInfomation.getUsername());
-                        GroupBean.setFriend_sex(personInfomation.getGender());
-                        GroupBean.setFriend_age(String.valueOf(personInfomation.getAge()));//之后记得换成年龄计算
-                        System.out.println("information:"+personInfomation.getId()+","+personInfomation.getUsername()+","+personInfomation.getGender()+","+personInfomation.getAge());
-                        list_search.add(GroupBean);
+
+                    @Override
+                    public void onFailure(Call<PersonInfoGsonBean> call, Throwable t) {
+                        Log.d("call_choose onFailure()", String.valueOf(t));
+                        Toast.makeText(ChooseFriendActivity.this,"连接失败，请检查网络后重试",Toast.LENGTH_SHORT).show();
                     }
-                }
-                Log.d("size", String.valueOf(list_search.size()));
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ChooseFriendActivity.this);
-                chooseList.setLayoutManager(linearLayoutManager);
-                ChooseListAdpter chooseListAdpter = new ChooseListAdpter(list_search,ChooseFriendActivity.this,intent_flag,intent_name);
-                chooseList.setAdapter(chooseListAdpter);
+                });
 
             }
         });

@@ -16,12 +16,13 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.rannver.loginuserdemo.Data.PersonInfomation;
+import com.example.rannver.loginuserdemo.Data.dbTable.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.Util.CircleImageView;
 import com.example.rannver.loginuserdemo.Util.DateCheckUtil;
 import com.example.rannver.loginuserdemo.Util.PopuWindowHeadImageUtil;
 import com.example.rannver.loginuserdemo.Util.PopuWindowTvInfo;
+import com.squareup.picasso.Picasso;
 
 import org.litepal.crud.DataSupport;
 
@@ -162,6 +163,7 @@ public class PersonInfoEditActivity extends AppCompatActivity {
                 }else {
                     //上传至远程服务器、本地存储用户信息
                     LoadSave(year,month,day,address,job,phone);
+                    CloudSave(year,month,day,address,job,phone);
                     //跳转至详细信息界面
                     Intent intent_detai = new Intent(PersonInfoEditActivity.this,PersonInfoDetaiActivity.class);
                     intent_detai.putExtra("login_flag",intent_flag);
@@ -174,15 +176,15 @@ public class PersonInfoEditActivity extends AppCompatActivity {
 
     }
 
+    //更改的用户数据保存到后台
+    private void CloudSave(String year, String month, String day, String address, String job, String phone) {
+
+    }
+
     //头像显示
     private void ShowHeadImage(String head_image_path) {
-        //之后记得增加来自后台的url的解析显示
-        if (head_image_path!=null){
-            File file = new File(head_image_path);
-            if (file.exists()){
-                Bitmap bitmap = BitmapFactory.decodeFile(head_image_path);
-                ivEditHead.setImageBitmap(bitmap);
-            }
+        if (head_image_path != null) {
+            Picasso.with(PersonInfoEditActivity.this).load(head_image_path).into(ivEditHead);
         }
     }
 
