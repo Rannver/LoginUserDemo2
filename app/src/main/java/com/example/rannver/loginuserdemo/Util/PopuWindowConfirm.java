@@ -21,9 +21,16 @@ import com.example.rannver.loginuserdemo.Data.dbTable.PersonInfomation;
 import com.example.rannver.loginuserdemo.R;
 import com.example.rannver.loginuserdemo.UI.PersonInfoActivity;
 import com.example.rannver.loginuserdemo.WebApi.DeleteFriendApi;
+import com.example.rannver.loginuserdemo.WebApi.RemoveCareApi;
+import com.example.rannver.loginuserdemo.WebApi.SetCareApi;
+import com.example.rannver.loginuserdemo.WebApi.ShowBeCareApi;
 import com.example.rannver.loginuserdemo.WebService.DeleteFriendService;
+import com.example.rannver.loginuserdemo.WebService.RemoveCareService;
+import com.example.rannver.loginuserdemo.WebService.SetCareService;
+import com.example.rannver.loginuserdemo.WebService.ShowBeCareService;
 
 import org.litepal.crud.DataSupport;
+import org.litepal.tablemanager.typechange.TextOrm;
 
 import java.util.List;
 
@@ -166,13 +173,9 @@ public class PopuWindowConfirm extends PopupWindow {
                 List<PersonInfomation> infos = DataSupport.where("username = ?",username).find(PersonInfomation.class);
                 int user_id = 0;
                 for (PersonInfomation person : infos){
-                    user_id = person.getId();
+                    user_id = person.getUser_id();
                 }
                 DeleteCare(user_id,friend_id);
-                Intent intent_back = new Intent(PActivity,PersonInfoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent_back.putExtra("login_flag",intent_flag);
-                intent_back.putExtra("login_name",intent_name);
-                PContext.startActivity(intent_back);
             }
         });
         //点击取消事件
@@ -185,16 +188,32 @@ public class PopuWindowConfirm extends PopupWindow {
     }
 
     //删除特别关心关系
-    private void DeleteCare(int user_id, String friend_id) {
+    private void DeleteCare(final int user_id, String friend_id) {
 
-        //解除关系，用户表删除特别关心
-        PersonInfomation personInfomation_user = new PersonInfomation();
-        PersonInfomation personInfomation_friend = new PersonInfomation();
-        personInfomation_user.setToDefault("care");
-        personInfomation_user.updateAll("id = ?", String.valueOf(user_id));
-        //好友的用户表删除被特别关心
-        personInfomation_friend.setToDefault("becare");
-        personInfomation_friend.updateAll("id = ?",friend_id);
+        //后台移除特别关心关系
+        RemoveCareApi removeCareApi = new RemoveCareApi();
+        RemoveCareService removeCareService = removeCareApi.getService();
+        Call<String> call_remove = removeCareService.getState(user_id);
+        call_remove.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                //本地解除关系，用户表删除特别关心
+                PersonInfomation personInfomation_user = new PersonInfomation();
+                PersonInfomation personInfomation_friend = new PersonInfomation();
+                personInfomation_user.setToDefault("care");
+                personInfomation_user.updateAll("id = ?", String.valueOf(user_id));
+
+                Intent intent_back = new Intent(PActivity,PersonInfoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent_back.putExtra("login_flag",intent_flag);
+                intent_back.putExtra("login_name",intent_name);
+                PContext.startActivity(intent_back);
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(PActivity,"连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+            }
+        });
 
         System.out.println("delete:"+"特别关心关系已解除");
 
@@ -202,47 +221,13 @@ public class PopuWindowConfirm extends PopupWindow {
 
     //添加特别关心好友
     private void AddCare(String username, String friend_id) {
-
-        //获取用户id
-        List<PersonInfomation> infos = DataSupport.where("username = ?",username).find(PersonInfomation.class);
-        int user_id = 0;
-        for (PersonInfomation person : infos){
-            user_id = person.getId();
-        }
-
-        //检测双方是否互为好友
-        boolean flag_mutual = CheckMutual(username,friend_id);
         //检测用户是否已有特别关心的好友
         boolean flag_care = CheckCare(username);
-        //检测好友是否已经被特别关心
-        boolean flag_becare = CheckBeCare(friend_id);
-
-        if (flag_mutual){
-            if (flag_care) {
-                if (flag_becare){
-                    //添加为特别关心好友并且更新至后台服务器(需要通过融云的验证消息)
-                    //本地添加（目前无后台操作，为双方更新）
-                    AddLocalCare(user_id, Integer.parseInt(friend_id));
-                    Intent intent_back = new Intent(PActivity,PersonInfoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent_back.putExtra("login_flag",intent_flag);
-                    intent_back.putExtra("login_name",intent_name);
-                    PContext.startActivity(intent_back);
-                }else {
-                    Toast.makeText(PActivity,"该用户已被特别关心，无法添加",Toast.LENGTH_SHORT).show();
-                    pop.dismiss();
-                }
-            }else {
-                Toast.makeText(PActivity,"已有特别关心的好友，无法添加",Toast.LENGTH_SHORT).show();
-                pop.dismiss();
-            }
-        }else {
-            Toast.makeText(PActivity,"你还不是该用户的好友",Toast.LENGTH_SHORT).show();
-            pop.dismiss();
-        }
+        CheckMutual(username,friend_id,flag_care);
     }
 
     //添加特别关心
-    private void AddLocalCare(int user_id, int friend_id) {
+    private void AddLocalCare(String user_id, String friend_id) {
 
         /*
         be_addperson:被添加的id
@@ -253,29 +238,58 @@ public class PopuWindowConfirm extends PopupWindow {
         PersonInfomation person_care = new PersonInfomation();
         PersonInfomation person_becare = new PersonInfomation();
         //用户添加特别关心id
-        person_care.setCare(friend_id);
+        person_care.setCare(Integer.parseInt(friend_id));
         person_care.updateAll("id = ?", String.valueOf(user_id));
-        //好友添加被特别关心id
-        person_becare.setBecare(user_id);
-        person_becare.updateAll("id = ?", String.valueOf(friend_id));
 
     }
 
-    //检测好友是否已被特别关心，已经被特别关心返回false，否则返回true
-    private boolean CheckBeCare(String friend_id) {
-        boolean flag = false;
+    //检测好友是否已被特别关心
+    private void CheckBeCare(final String user_id, final String friend_id) {
+        ShowBeCareApi showBeCareApi = new ShowBeCareApi();
+        ShowBeCareService showBeCareService = showBeCareApi.getService();
+        Call<Integer> call_becare = showBeCareService.getBeCare(Integer.parseInt(friend_id));
+        call_becare.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.body()==0){
+                    //该用户没有特别关心的好友
+                    AddCloudCare(user_id,friend_id);
+                }else {
+                    Toast.makeText(PActivity,"该用户已被特别关心",Toast.LENGTH_SHORT).show();
+                }
+            }
 
-        List<PersonInfomation> infos  = DataSupport.where("id = ?",friend_id).find(PersonInfomation.class);
-        int becare_id = -1;
-        for (PersonInfomation person:infos){
-            becare_id = person.getBecare();
-        }
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                Log.d("becare_onFailure", String.valueOf(t));
+            }
+        });
+    }
 
-        if (becare_id==0){
-            flag = true;
-        }
+    //添加特别关心到后台
+    private void AddCloudCare(final String user_id, final String friend_id) {
+        SetCareApi careApi = new SetCareApi();
+        SetCareService careService = careApi.getService();
+        Call<String> call_care = careService.getState(Integer.parseInt(user_id),Integer.parseInt(friend_id));
+        call_care.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.body().equals("false")){
+                    Toast.makeText(PActivity,"该用户已被特别关心",Toast.LENGTH_SHORT).show();
+                }else {
+                    AddLocalCare(user_id,friend_id);
+                    Intent intent_back = new Intent(PActivity,PersonInfoActivity.class);
+                    intent_back.putExtra("login_name",intent_name);
+                    intent_back.putExtra("login_flag",intent_flag);
+                    PContext.startActivity(intent_back);
+                }
+            }
 
-        return flag;
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(PActivity,"添加失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     //检测用户是否已有特别关心的好友，已有返回false，否则返回true
@@ -296,10 +310,8 @@ public class PopuWindowConfirm extends PopupWindow {
     }
 
     //检测是否相互为好友，是相互好友返回true，否则返回flase
-    private Boolean CheckMutual(String username, String friend_id) {
-        boolean flag = false;
+    private void CheckMutual(String username, String friend_id,boolean flag_care) {;
         boolean flag_user = false;
-        boolean flag_friend = false;
 
         //检测用户好友列表
         List<PersonInfomation> infos_user = DataSupport.where("username = ?",username).find(PersonInfomation.class);
@@ -307,7 +319,7 @@ public class PopuWindowConfirm extends PopupWindow {
         int user_id  = 0;
         for (PersonInfomation person:infos_user){
             user_friends = person.getFriend_list();
-            user_id = person.getId();
+            user_id = person.getUser_id();
         }
         for (PersonFriend friend:user_friends){
             String id = String.valueOf(friend.getFriend_id());
@@ -318,24 +330,15 @@ public class PopuWindowConfirm extends PopupWindow {
         }
 
         //检测好友好友列表
-        List<PersonInfomation> infos_friend = DataSupport.where("id = ?",friend_id).find(PersonInfomation.class);
-        List<PersonFriend> friend_friends = null;
-        for (PersonInfomation friend:infos_friend){
-            friend_friends = friend.getFriend_list();
-        }
-        for (PersonFriend friend:friend_friends){
-            if (user_id==friend.getFriend_id()){
-                flag_friend =true;
-                break;
+        if (flag_user){
+            if (flag_care){
+                CheckBeCare(String.valueOf(user_id),friend_id);
+            }else {
+                Toast.makeText(PActivity,"你已有特别关心的好友",Toast.LENGTH_SHORT).show();
             }
+        }else {
+            Toast.makeText(PActivity,"该用户不是您的好友",Toast.LENGTH_SHORT).show();
         }
-
-        //flag判断
-        if (flag_user&&flag_friend){
-            flag = true;
-        }
-
-        return flag;
     }
 
 

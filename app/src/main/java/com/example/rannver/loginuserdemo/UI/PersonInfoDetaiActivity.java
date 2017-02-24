@@ -105,7 +105,12 @@ public class PersonInfoDetaiActivity extends AppCompatActivity {
         //设置图片信息
         //本地路径方式，如果是后台的Url需要用picasso
         if (head_image_path != null) {
-            Picasso.with(PersonInfoDetaiActivity.this).load(head_image_path).into(ivDetaiHead);
+            File file = new File(head_image_path);
+            if (file.exists()){
+                Picasso.with(PersonInfoDetaiActivity.this).load(file).into(ivDetaiHead);
+            }else {
+                Picasso.with(PersonInfoDetaiActivity.this).load(head_image_path).into(ivDetaiHead);
+            }
         }
         //点击返回
         ivDetaiBack.setOnClickListener(new View.OnClickListener() {

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +23,11 @@ import com.example.rannver.loginuserdemo.Util.CircleImageView;
 import com.example.rannver.loginuserdemo.Util.DateCheckUtil;
 import com.example.rannver.loginuserdemo.Util.PopuWindowHeadImageUtil;
 import com.example.rannver.loginuserdemo.Util.PopuWindowTvInfo;
+import com.example.rannver.loginuserdemo.WebApi.ChangePortraitApi;
+import com.example.rannver.loginuserdemo.WebApi.ChangeUserInfoApi;
+import com.example.rannver.loginuserdemo.WebService.ChangeFriendInfoService;
+import com.example.rannver.loginuserdemo.WebService.ChangePortraitService;
+import com.example.rannver.loginuserdemo.WebService.ChangeUserInfoService;
 import com.squareup.picasso.Picasso;
 
 import org.litepal.crud.DataSupport;
@@ -34,6 +40,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Rannver on 2017/1/26.
@@ -162,13 +174,7 @@ public class PersonInfoEditActivity extends AppCompatActivity {
                     popuWindowTvInfo.ChangepopuInfo("请选择你的性别");
                 }else {
                     //上传至远程服务器、本地存储用户信息
-                    LoadSave(year,month,day,address,job,phone);
                     CloudSave(year,month,day,address,job,phone);
-                    //跳转至详细信息界面
-                    Intent intent_detai = new Intent(PersonInfoEditActivity.this,PersonInfoDetaiActivity.class);
-                    intent_detai.putExtra("login_flag",intent_flag);
-                    intent_detai.putExtra("login_name",intent_name);
-                    startActivity(intent_detai);
                 }
 
             }
@@ -177,14 +183,70 @@ public class PersonInfoEditActivity extends AppCompatActivity {
     }
 
     //更改的用户数据保存到后台
-    private void CloudSave(String year, String month, String day, String address, String job, String phone) {
+    private void CloudSave(final String year, final String month, final String day, final String address, final String job, final String phone) {
+        DateCheckUtil datecheck = new DateCheckUtil();
+        ChangeUserInfoApi changeApi = new ChangeUserInfoApi();
+        ChangeUserInfoService changeService = changeApi.getService();
+        Call<String> call_change = changeService.getState(Integer.parseInt(intent_id),datecheck.CalAge(Integer.parseInt(year),Integer.parseInt(month),Integer.parseInt(day)),Long.parseLong(phone),intent_name,job,address,Setbirthday(year,month,day).getTime());
+        call_change.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.body()!=null){
+                    if (response.body().equals("true")){
+                        CloudPortraitSave();
+                        LoadSave(year,month,day,address,job,phone);
+                        Intent intent_detai = new Intent(PersonInfoEditActivity.this,PersonInfoDetaiActivity.class);
+                        intent_detai.putExtra("login_flag",intent_flag);
+                        intent_detai.putExtra("login_name",intent_name);
+                        startActivity(intent_detai);
+                    }
+                }else {
+                    System.out.println("response.body():"+response.body()+" by edit");
+                }
+            }
 
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(PersonInfoEditActivity.this,"连接失败，请检查网络连接设置",Toast.LENGTH_SHORT).show();
+                Log.d("edit_onFailure", String.valueOf(t));
+            }
+        });
+    }
+
+    //云端头像存储
+    private void CloudPortraitSave() {
+        ChangePortraitApi changeApi = new ChangePortraitApi();
+        ChangePortraitService changeService = changeApi.getService();
+        File file = new File(image_head_uri.getPath());
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"),file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("portrait",file.getName(),requestFile);
+        Call<String> call_change = changeService.getState(intent_name,body);
+        call_change.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                System.out.println("response.body():"+response.body()+"   byProtrait");
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast.makeText(PersonInfoEditActivity.this,"连接失败，请检查网络设置",Toast.LENGTH_SHORT).show();
+                Log.d("edit_onFailureByPor", String.valueOf(t));
+            }
+        });
     }
 
     //头像显示
     private void ShowHeadImage(String head_image_path) {
+        if (image_head_uri!=null){
+            head_image_path = image_head_uri.getPath();
+        }
         if (head_image_path != null) {
-            Picasso.with(PersonInfoEditActivity.this).load(head_image_path).into(ivEditHead);
+            File file = new File(head_image_path);
+            if (file.exists()){
+                Picasso.with(PersonInfoEditActivity.this).load(file).into(ivEditHead);
+            }else {
+                Picasso.with(PersonInfoEditActivity.this).load(head_image_path).into(ivEditHead);
+            }
         }
     }
 

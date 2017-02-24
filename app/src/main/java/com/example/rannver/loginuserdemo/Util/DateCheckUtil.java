@@ -72,4 +72,32 @@ public class DateCheckUtil {
         long ms = date.getTime();
         return ms;
     }
+    //年龄计算
+    public int CalAge(int year, int month, int day){
+        int year_now;
+        int month_now;
+        int day_now;
+        SimpleDateFormat sdf_now_year = new SimpleDateFormat("yyyy");
+        SimpleDateFormat sdf_now_month = new SimpleDateFormat("MM");
+        SimpleDateFormat sdf_now_day = new SimpleDateFormat("dd");
+        year_now = Integer.parseInt(sdf_now_year.format(new Date()));
+        month_now = Integer.parseInt(sdf_now_month.format(new Date()));
+        day_now = Integer.parseInt(sdf_now_day.format(new Date()));
+
+        System.out.println("now_time:"+year_now+"-"+month_now+"-"+day_now);
+
+        int age = year_now-year;
+        if (month_now<=month){
+            if (month_now==month){
+                if (day_now<day){
+                    age--;
+                }
+            }else {
+                age--;
+            }
+        }
+
+
+        return age;
+    }
 }
