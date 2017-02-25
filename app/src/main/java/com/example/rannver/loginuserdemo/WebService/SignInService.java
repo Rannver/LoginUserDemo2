@@ -15,12 +15,12 @@ import retrofit2.http.Query;
 public interface SignInService {
     @Multipart
     @POST("signIn")
-    Call<String> getState(@Query("username") String name,
-                          @Query("password") String pwd,
-                          @Query("gender") String sex,
-                          @Query("birthday") long birthday,
-                          @Query("address") String address,
-                          @Query("career") String job,
-                          @Query("phone_number") long phone,
+    Call<String> getState(@Part("username") RequestBody name,
+                          @Part("password") RequestBody pwd,
+                          @Part("gender")   RequestBody sex,
+                          @Part("birthday") RequestBody birthday,
+                          @Part("address") RequestBody address,
+                          @Part("career") RequestBody job,
+                          @Part("phone_number") RequestBody phone,
                           @Part MultipartBody.Part file);
 }

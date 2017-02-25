@@ -146,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         call_login.enqueue(new Callback<PersonInfoGsonBean>() {
             @Override
             public void onResponse(Call<PersonInfoGsonBean> call, Response<PersonInfoGsonBean> response) {
+//                System.out.println("login.body():"+response.body().getUsername());
                 if (response.body()==null){
                     //登录失败
                     Toast.makeText(MainActivity.this,"用户名或密码错误，请重试",Toast.LENGTH_SHORT).show();
@@ -153,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
                     //登录成功
                     //更新SaveUser表
                     SaveUserTable(name,pwd, Integer.parseInt(flag));
+                    SaveLocalUserData(response);
                     //跳转至用户个人信息界面
                     Intent intent_1 = new Intent(MainActivity.this,PersonInfoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent_1.putExtra("login_flag",flag);
@@ -244,5 +246,85 @@ public class MainActivity extends AppCompatActivity {
             user.updateAll("username = ?",name);
         }
 
+    }
+
+    //将用户信息存入本地数据库
+    private void SaveLocalUserData(Response<PersonInfoGsonBean> response) {
+        PersonInfoGsonBean personInfo = response.body();
+        final String username = personInfo.getUsername();
+        final String path = personInfo.getPortrait_url();
+        long phone = personInfo.getPhone_number();
+        final int  id = personInfo.getId();
+        String sex = personInfo.getGender();
+        String job = personInfo.getCareer();
+        int care = personInfo.getCare();
+        int becare = personInfo.getBeCare();
+        int age = personInfo.getAge();
+        String address = personInfo.getAddress();
+        Date birthday = new Date(personInfo.getBirthday());
+        System.out.println("SaveLocalUserData:"+username+","+path+","+phone+","+id+","+sex+","+job+","+care+","+becare+","+age+","+address);
+        //存入本地数据库
+        //本地存储用户个人信息
+        final List<PersonInfomation> list = DataSupport.where("username = ?",username).find(PersonInfomation.class);
+        PersonInfomation personInfomation = new PersonInfomation();
+        personInfomation.setUsername(username);
+        personInfomation.setPortrait_url(path);
+        personInfomation.setPhone_number(phone);
+        personInfomation.setUser_id(id);
+        personInfomation.setGender(sex);
+        personInfomation.setCareer(job);
+        personInfomation.setCare(care);
+        personInfomation.setBecare(becare);
+        personInfomation.setAge(age);
+        personInfomation.setAddress(address);
+        personInfomation.setBirthday(birthday);
+        if (list.size()==0){
+            personInfomation.save();
+        }else {
+            personInfomation.updateAll("username = ?",username);
+        }
+        //本地存储用户好友信息
+        GetFriendInfoApi getFriendInfoApi = new GetFriendInfoApi();
+        GetFriendInfoService getFriendInfoService = getFriendInfoApi.getService();
+        Call<List<FriendGsonBean>> call_friendList = getFriendInfoService.getFriendList(id);
+        call_friendList.enqueue(new Callback<List<FriendGsonBean>>() {
+            @Override
+            public void onResponse(Call<List<FriendGsonBean>> call, Response<List<FriendGsonBean>> response) {
+                List<FriendGsonBean> friendList = response.body();
+                System.out.println("friendList.size2():"+friendList.size());
+                if (friendList.size()!=0){
+                    //获取用户用于获取好友信息的id
+                    List<PersonInfomation> infos = DataSupport.where("username = ?",username).find(PersonInfomation.class);
+                    int key_id = 0;
+                    for (PersonInfomation person:infos){
+                        key_id = person.getId();
+                    }
+                    //将好友信息存入本地数据库
+                    for (FriendGsonBean friendGsonBean:friendList){
+                        int friend_id = friendGsonBean.getFriend_id();
+                        String remark = friendGsonBean.getRemark();
+                        String relation = friendGsonBean.getRelationship();
+                        List<PersonFriend> friends = DataSupport.where("friend_id = ? and personinfomation_id = ?",String.valueOf(friend_id),String.valueOf(key_id)).find(PersonFriend.class);
+                        PersonFriend personFriend = new PersonFriend();
+                        personFriend.setFriend_id(friend_id);
+                        personFriend.setPersoninfomation_id(key_id);
+                        personFriend.setFriend_remark(remark);
+                        personFriend.setFriend_relationship(relation);
+                        if (friends.size()==0){
+                            boolean flag = personFriend.save();
+                            System.out.println("personFriend.save():"+flag);
+                        }else {
+                            int flag = personFriend.updateAll("friend_id = ? and personinfomation_id = ?",String.valueOf(friend_id),String.valueOf(key_id));
+                            System.out.println("personFriend.updateAll():"+flag);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<FriendGsonBean>> call, Throwable t) {
+                Log.d("onFailure","请求失败：call_friendList");
+            }
+        });
     }
 }

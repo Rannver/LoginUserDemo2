@@ -164,6 +164,12 @@ public class PersonInfoEditActivity extends AppCompatActivity {
                 String address = edEditAddress.getText().toString();
                 String job = edEditJob.getText().toString();
                 String phone = edEditPhone.getText().toString();
+                String sex ;
+                if (btuEditSexBoy.isChecked()){
+                    sex = btuEditSexBoy.getText().toString();
+                }else {
+                    sex = btuEditSexGirl.getText().toString();
+                }
                 //检测信息完整度
 
                 if (!CheckBirthday(year,month,day)){
@@ -174,7 +180,7 @@ public class PersonInfoEditActivity extends AppCompatActivity {
                     popuWindowTvInfo.ChangepopuInfo("请选择你的性别");
                 }else {
                     //上传至远程服务器、本地存储用户信息
-                    CloudSave(year,month,day,address,job,phone);
+                    CloudSave(year,month,day,address,job,phone,sex);
                 }
 
             }
@@ -183,18 +189,20 @@ public class PersonInfoEditActivity extends AppCompatActivity {
     }
 
     //更改的用户数据保存到后台
-    private void CloudSave(final String year, final String month, final String day, final String address, final String job, final String phone) {
+    private void CloudSave(final String year, final String month, final String day, final String address, final String job, final String phone, final String sex) {
         DateCheckUtil datecheck = new DateCheckUtil();
         ChangeUserInfoApi changeApi = new ChangeUserInfoApi();
         ChangeUserInfoService changeService = changeApi.getService();
-        Call<String> call_change = changeService.getState(Integer.parseInt(intent_id),datecheck.CalAge(Integer.parseInt(year),Integer.parseInt(month),Integer.parseInt(day)),Long.parseLong(phone),intent_name,job,address,Setbirthday(year,month,day).getTime());
+        Call<String> call_change = changeService.getState(Integer.parseInt(intent_id),datecheck.CalAge(Integer.parseInt(year),Integer.parseInt(month),Integer.parseInt(day)),Long.parseLong(phone),intent_name,job,address,sex,Setbirthday(year,month,day).getTime());
         call_change.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.body()!=null){
                     if (response.body().equals("true")){
-                        CloudPortraitSave();
-                        LoadSave(year,month,day,address,job,phone);
+                        if (image_head_uri!=null){
+                            CloudPortraitSave();
+                        }
+                        LoadSave(year,month,day,address,job,phone,sex);
                         Intent intent_detai = new Intent(PersonInfoEditActivity.this,PersonInfoDetaiActivity.class);
                         intent_detai.putExtra("login_flag",intent_flag);
                         intent_detai.putExtra("login_name",intent_name);
@@ -220,11 +228,12 @@ public class PersonInfoEditActivity extends AppCompatActivity {
         File file = new File(image_head_uri.getPath());
         RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"),file);
         MultipartBody.Part body = MultipartBody.Part.createFormData("portrait",file.getName(),requestFile);
-        Call<String> call_change = changeService.getState(intent_name,body);
+        RequestBody username = RequestBody.create(null,intent_name);
+        Call<String> call_change = changeService.getState(username,body);
         call_change.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                System.out.println("response.body():"+response.body()+"   byProtrait");
+                System.out.println("response.body():"+response.body()+"   byProtrait"+" "+intent_name);
             }
 
             @Override
@@ -251,7 +260,7 @@ public class PersonInfoEditActivity extends AppCompatActivity {
     }
 
     //本地数据库存储
-    private void LoadSave(String year, String month, String day, String address, String job, String phone) {
+    private void LoadSave(String year, String month, String day, String address, String job, String phone,String sex) {
         PersonInfomation personinfo = new PersonInfomation();
         if (image_head_uri!=null){
             personinfo.setPortrait_url(image_head_uri.getPath());
@@ -260,6 +269,7 @@ public class PersonInfoEditActivity extends AppCompatActivity {
         personinfo.setCareer(job);
         personinfo.setPhone_number(Long.parseLong(phone));
         personinfo.setBirthday(Setbirthday(year,month,day));
+        personinfo.setGender(sex);
         personinfo.updateAll("username = ?",intent_name);
     }
 

@@ -28,7 +28,7 @@ public class PersonInfoGsonBean {
     private String career;
     private String gender;
     private int id;
-    private int phone_number;
+    private long phone_number;
     private String portrait_url;
     private String username;
 
@@ -96,11 +96,11 @@ public class PersonInfoGsonBean {
         this.id = id;
     }
 
-    public int getPhone_number() {
+    public long getPhone_number() {
         return phone_number;
     }
 
-    public void setPhone_number(int phone_number) {
+    public void setPhone_number(long phone_number) {
         this.phone_number = phone_number;
     }
 

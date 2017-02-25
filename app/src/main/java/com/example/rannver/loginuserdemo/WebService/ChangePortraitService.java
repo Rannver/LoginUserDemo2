@@ -15,6 +15,6 @@ import retrofit2.http.Query;
 public interface ChangePortraitService  {
     @Multipart
     @POST("cgPortrait")
-    Call<String>  getState(@Query("username") String name,
+    Call<String>  getState(@Part("username") RequestBody username,
                            @Part MultipartBody.Part file);
 }

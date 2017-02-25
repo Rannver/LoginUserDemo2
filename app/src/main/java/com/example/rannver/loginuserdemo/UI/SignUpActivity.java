@@ -176,19 +176,31 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     //注册用户数据传往远程数据库
-    private void UpLoadUserData(final String user_name, final String user_pwd1, String user_sex, Date date, String user_adress, String user_job, String user_phone, String path) {
+    private void UpLoadUserData(final String user_name, final String user_pwd1, final String user_sex, Date date, String user_adress, String user_job, String user_phone, String path) {
 
         File file = new File(path);
         final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"),file);
         MultipartBody.Part body = MultipartBody.Part.createFormData("portrait",file.getName(),requestFile);
+        RequestBody name = RequestBody.create(null,user_name);
+        RequestBody pwd = RequestBody.create(null,user_pwd1);
+        final RequestBody sex = RequestBody.create(null,user_sex);
+        RequestBody birthday = RequestBody.create(null, String.valueOf(date.getTime()));
+        RequestBody address = RequestBody.create(null,user_adress);
+        RequestBody job = RequestBody.create(null,user_job);
+        RequestBody phone = RequestBody.create(null,user_phone);
         SignInApi signApi = new SignInApi();
         SignInService signService = signApi.getService();
-        Call<String> call_sign = signService.getState(user_name,user_pwd1,user_sex,date.getTime(),user_adress,user_job, Long.parseLong(user_phone),body);
+        Call<String> call_sign = signService.getState(name,pwd,sex,birthday,address,job, phone,body);
         call_sign.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                System.out.println("response.body():"+response.body());
-                //存在返回值为null的bug
+                System.out.println("response.body():"+response.body()+","+user_sex);
+                if (response.body().equals("true")){
+                    Intent intent_login = new Intent(SignUpActivity.this,MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent_login.putExtra("signup_name",user_name);
+                    intent_login.putExtra("signup_pwd",user_pwd1);
+                    startActivity(intent_login);
+                }
             }
 
             @Override

@@ -201,7 +201,7 @@ public class PopuWindowConfirm extends PopupWindow {
                 PersonInfomation personInfomation_user = new PersonInfomation();
                 PersonInfomation personInfomation_friend = new PersonInfomation();
                 personInfomation_user.setToDefault("care");
-                personInfomation_user.updateAll("id = ?", String.valueOf(user_id));
+                personInfomation_user.updateAll("user_id = ?", String.valueOf(user_id));
 
                 Intent intent_back = new Intent(PActivity,PersonInfoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent_back.putExtra("login_flag",intent_flag);
@@ -239,7 +239,7 @@ public class PopuWindowConfirm extends PopupWindow {
         PersonInfomation person_becare = new PersonInfomation();
         //用户添加特别关心id
         person_care.setCare(Integer.parseInt(friend_id));
-        person_care.updateAll("id = ?", String.valueOf(user_id));
+        person_care.updateAll("user_id = ?", String.valueOf(user_id));
 
     }
 

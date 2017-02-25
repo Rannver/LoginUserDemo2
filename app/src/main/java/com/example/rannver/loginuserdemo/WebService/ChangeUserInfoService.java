@@ -16,5 +16,6 @@ public interface ChangeUserInfoService {
                           @Query("name") String username,
                           @Query("career") String job,
                           @Query("address") String address,
+                          @Query("gender")  String sex,
                           @Query("birthday") long birthday);
 }
